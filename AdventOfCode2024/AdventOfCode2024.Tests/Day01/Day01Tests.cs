@@ -15,4 +15,19 @@ public class Day01Tests
         var solver = new Solutions.Day01();
         Assert.Equal(1189304, solver.Part1("Day01/input.txt"));
     }
+    
+    [Fact]
+    public void Test_Part2_Sample()
+    {
+        var solver = new Solutions.Day01();
+        Assert.Equal(31, solver.Part2("Day01/sample.txt"));
+    }
+
+    [Fact]
+    public void Test_Part2()
+    {
+        var solver = new Solutions.Day01();
+        Assert.Equal(24349736, solver.Part2("Day01/input.txt"));
+    }
+    
 }
