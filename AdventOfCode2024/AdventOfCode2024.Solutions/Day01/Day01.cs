@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day01
@@ -24,18 +26,33 @@ public class Day01
     
     public int Part2(string filename)
     {
-        var lines = File.ReadAllLines(filename);
+        var input = File.ReadAllText(filename).AsSpan();
 
         var lhs = new List<int>();
-        var rhs = new List<int>();
+        var rhs = new Dictionary<int, int>();
 
-        foreach (var line in lines)
+        var sv = SearchValues.Create(" \n");
+
+        var state = 0;
+        foreach (var bit in input.SplitAny(sv))
         {
-            var parts = line.Split("   "); 
-            lhs.Add(int.Parse(parts[0]));
-            rhs.Add(int.Parse(parts[1]));
+            if (state == 0)
+            {
+                lhs.Add(int.Parse(input[bit]));
+                state = 1;
+            }
+            else if (state == 3)
+            {
+                var r = int.Parse(input[bit]);
+                rhs[r] = rhs.GetValueOrDefault(r) + 1;
+                state = 0;
+            }
+            else
+            {
+                state++;
+            }
         }
         
-        return lhs.Sum(l => l * rhs.Count(r => r == l));
+        return lhs.Sum(l => l * rhs.GetValueOrDefault(l));
     }
 }
