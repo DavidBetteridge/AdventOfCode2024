@@ -1,5 +1,3 @@
-using System.Buffers;
-
 namespace AdventOfCode2024.Solutions;
 
 public class Day02
@@ -49,82 +47,91 @@ public class Day02
         return result;
     }
     
+    
     public int Part2(string filename)
     {
         var lines = File.ReadAllText(filename).AsSpan();
-
-        var level = new List<int>();
         var result = 0;
         foreach (var lineRange in lines.Split('\n'))
         {
-            level.Clear();
-            foreach (var valRange in lines[lineRange].Split(' '))
-            {
-                level.Add(int.Parse(lines[lineRange][valRange]));
-            }
-            
-            if (IsSafe(level))
-            {
+            if (CountErrors(lines, lineRange, increasing: true) <= 1)
                 result++;
-                continue;
-            }
-            
-            for (var toRemove = 0; toRemove < level.Count; toRemove++)
-            {
-                if (IsSafe(level, toRemove))  
-                {
-                    result++;
-                    break;
-                }
-            }
+            else if (CountErrors(lines, lineRange, increasing: false) <= 1)
+                result++;
         }
-        
 
         return result;
     }
-    
-    private bool IsSafe(List<int> levels)
-    {
-        var increasing = false;
 
-        for (var i = 1; i < levels.Count; i++)
+    private static int CountErrors(ReadOnlySpan<char> lines, Range lineRange, bool increasing)
+    {
+        bool Ok(int left, int rhs)
         {
-            var diff = levels[i] - levels[i-1];
-            if (Math.Abs(diff) > 3) return false;
-            if (diff==0) return false;
-            if (i == 1)
-                increasing = diff > 0;
-            else if (increasing && diff < 0)
-                return false;
-            else if (!increasing && diff > 0)
-                return false;
+            if (increasing)
+                return (rhs - left) is > 0 and <= 3;
+            else
+                return (left - rhs) is > 0 and <= 3;
+        }
+        
+        var n1 = -1;
+        var n2 = -1;
+        var n3 = -1;
+        var i = 0;
+        var errorCount = 0;
+        foreach (var valRange in lines[lineRange].Split(' '))
+        {
+            var n = int.Parse(lines[lineRange][valRange]);
+
+            if (i >= 2)
+            {
+                // We have two previous values to check.
+                if (!Ok(n2, n1))
+                {
+                    // We have a problem
+                    if (errorCount > 0)
+                    {
+                        // We have already has a problem
+                        errorCount++;
+                        break;
+                    }
+                    else
+                    {
+                        // Can we remove either n2 or n1 and fix the problem
+                        if (Ok(n2, n))
+                        {
+                            // We can remove n1
+                            errorCount = 1;
+                            n1 = n2;
+                            n2 = n3;
+                        }
+                        else if ((n3 == -1 || Ok(n3, n1)) && Ok(n1, n))
+                        {
+                            // We can remove n2
+                            errorCount = 1;
+                            n2 = n3;
+                        }
+
+                        else
+                        {
+                            // Not fixable
+                            errorCount = 2;
+                            break;
+                        }
+                    }
+                }
+                    
+            }
+                
+            n3 = n2;
+            n2 = n1;
+            n1 = n;
+            i++;
         }
 
-        return true;
+        if (!Ok(n2, n1))
+            errorCount++;
+        
+        return errorCount;
     }
-    
-    
-    private bool IsSafe(List<int> levels, int skip)
-    {
-        bool? increasing = null;
 
-        for (var i = 1; i < levels.Count; i++)
-        {
-            if (i == skip) continue;
-            if (i == 1 && skip == 0) continue;
-            
-            var diff = skip == i-1 ? levels[i] - levels[i-2] : levels[i] - levels[i-1];
-            if (diff==0) return false;
-            if (Math.Abs(diff) > 3) return false;
-            
-            if (increasing is null)
-                increasing = diff > 0;
-            else if (increasing.Value && diff < 0)
-                return false;
-            else if (!increasing.Value && diff > 0)
-                return false;
-        }
-
-        return true;
-    }
 }
