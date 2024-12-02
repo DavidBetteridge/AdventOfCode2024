@@ -13,7 +13,6 @@ public class Day02
     {
         var lines = File.ReadAllLines(filename);
         return lines.Count(IsSafeWithTolerance);
-    
     }
     
     private bool IsSafe(List<int> levels)
@@ -43,10 +42,33 @@ public class Day02
 
         for (var toRemove = 0; toRemove < level.Count; toRemove++)
         {
-            var smaller = level[..toRemove].Concat(level[(toRemove + 1)..]);
-            if (IsSafe(smaller.ToList())) return true;
+            if (IsSafe(level, toRemove)) return true;
         }
 
         return false;
+    }
+    
+    private bool IsSafe(List<int> levels, int skip)
+    {
+        bool? increasing = null;
+
+        for (var i = 1; i < levels.Count; i++)
+        {
+            if (i == skip) continue;
+            if (i == 1 && skip == 0) continue;
+            
+            var diff = skip == i-1 ? levels[i] - levels[i-2] : levels[i] - levels[i-1];
+            if (diff==0) return false;
+            if (Math.Abs(diff) > 3) return false;
+            
+            if (increasing is null)
+                increasing = diff > 0;
+            else if (increasing.Value && diff < 0)
+                return false;
+            else if (!increasing.Value && diff > 0)
+                return false;
+        }
+
+        return true;
     }
 }
