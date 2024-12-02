@@ -1,18 +1,86 @@
+using System.Buffers;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day02
 {
     public int Part1(string filename)
     {
-        var lines = File.ReadAllLines(filename);
-        return lines.Count(l => IsSafe(l.Split(' ').Select(int.Parse).ToList()));
-    
-    }
+        var lines = File.ReadAllText(filename).AsSpan();
+        var result = 0;
+        foreach (var lineRange in lines.Split('\n'))
+        {
+            var i = 0;
+            var increasing = false;
+            var previousValue = 0;
+            result++;
+            foreach (var valRange in lines[lineRange].Split(' '))
+            {
+                var currentVal = int.Parse(lines[lineRange][valRange]);
 
+                if (i > 0)
+                {
+                    var diff = currentVal - previousValue;
+                    if (diff == 0 || Math.Abs(diff) > 3)
+                    {
+                        result--;
+                        break;
+                    }
+
+                    if (i == 1)
+                        increasing = diff > 0;
+                    else if (increasing && diff < 0)
+                    {
+                        result--;
+                        break;
+                    }
+                    else if (!increasing && diff > 0)
+                    {
+                        result--;
+                        break;
+                    }
+                }
+
+                previousValue = currentVal;
+                i++;
+            }
+        }
+
+        return result;
+    }
+    
     public int Part2(string filename)
     {
-        var lines = File.ReadAllLines(filename);
-        return lines.Count(IsSafeWithTolerance);
+        var lines = File.ReadAllText(filename).AsSpan();
+
+        var level = new List<int>();
+        var result = 0;
+        foreach (var lineRange in lines.Split('\n'))
+        {
+            level.Clear();
+            foreach (var valRange in lines[lineRange].Split(' '))
+            {
+                level.Add(int.Parse(lines[lineRange][valRange]));
+            }
+            
+            if (IsSafe(level))
+            {
+                result++;
+                continue;
+            }
+            
+            for (var toRemove = 0; toRemove < level.Count; toRemove++)
+            {
+                if (IsSafe(level, toRemove))  
+                {
+                    result++;
+                    break;
+                }
+            }
+        }
+        
+
+        return result;
     }
     
     private bool IsSafe(List<int> levels)
@@ -35,18 +103,6 @@ public class Day02
         return true;
     }
     
-    private bool IsSafeWithTolerance(string line)
-    {
-        var level = line.Split(' ').Select(int.Parse).ToList();
-        if (IsSafe(level)) return true;
-
-        for (var toRemove = 0; toRemove < level.Count; toRemove++)
-        {
-            if (IsSafe(level, toRemove)) return true;
-        }
-
-        return false;
-    }
     
     private bool IsSafe(List<int> levels, int skip)
     {

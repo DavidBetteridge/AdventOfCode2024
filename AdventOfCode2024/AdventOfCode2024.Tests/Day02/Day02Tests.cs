@@ -13,7 +13,7 @@ public class Day02Tests
     public void Test_Part1()
     {
         var solver = new Solutions.Day02();
-        Assert.Equal(334, solver.Part1("Day02/input.txt"));  //336. not 340
+        Assert.Equal(334, solver.Part1("Day02/input.txt"));
     }
     
     [Fact]
