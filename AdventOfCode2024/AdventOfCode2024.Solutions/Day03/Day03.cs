@@ -9,9 +9,11 @@ public class Day03
         var text = File.ReadAllText(filename);
 
         var matches = Day3Matcher.Part1().Matches(text);
-        var products = matches.Select(m => int.Parse(m.Groups[1].Value) * int.Parse(m.Groups[2].Value));
-        
-        return products.Sum();
+        var total = 0;
+        foreach (Match match in matches)
+            total+= (int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
+
+        return total;
     }
     
     public int Part2(string filename)
@@ -20,7 +22,7 @@ public class Day03
 
         var matches = Day3Matcher.Part2().Matches(text);
         var enabled = true;
-        var products = new List<int>();
+        var total = 0;
 
         foreach (Match match in matches)
         {
@@ -37,15 +39,14 @@ public class Day03
                 default:
                 {
                     if (enabled)
-                        products.Add(int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
+                        total+= (int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value));
 
                     break;
                 }
             }
         }
-       
         
-        return products.Sum();
+        return total;
     }
 }
 
