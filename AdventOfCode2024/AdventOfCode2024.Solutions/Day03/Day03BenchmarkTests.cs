@@ -18,7 +18,7 @@ public class Day03BenchmarkTests
     public void Day03_Part2()
     {
         var solver = new Day03();
-        var answer = solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day03/input.txt");
+        var answer = solver.Part2_Regex("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day03/input.txt");
         if (answer != 80570939) throw new Exception("Wrong answer");
     }
 
@@ -26,7 +26,7 @@ public class Day03BenchmarkTests
     public void Day03_Part2b()
     {
         var solver = new Day03();
-        var answer = solver.Part2b("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day03/input.txt");
+        var answer = solver.Part2_StateMachine("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day03/input.txt");
         if (answer != 80570939) throw new Exception("Wrong answer");
     }
     
