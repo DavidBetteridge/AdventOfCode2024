@@ -30,4 +30,10 @@ public class Day03Tests
         Assert.Equal(80570939, solver.Part2("Day03/input.txt"));
     }
     
+    [Fact]
+    public void Test_Part2b()
+    {
+        var solver = new Solutions.Day03();
+        Assert.Equal(80570939, solver.Part2b("Day03/input.txt"));
+    }
 }
