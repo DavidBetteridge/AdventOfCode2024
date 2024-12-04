@@ -160,21 +160,41 @@ public class Day03
         };
         
         var currentState = 0;
-        var lhsStart = 0;
-        var lhsEnd = 0;
-        var rhsStart = 0;
         var enabled = true;
         var total = 0;
+        var lhs = 0;
+        var rhs = 0;
+        var shortLen = text.Length - 1;
         for (var i = 0; i < text.Length; i++)
         {
             currentState = fns[currentState](text[i]);
 
             switch (currentState)
             {
-                case 14 or 16:
+                case 14:
                 {
-                    while (i + 1 < text.Length && char.IsDigit(text[i + 1]))
+                    lhs = text[i] - '0';
+                    var next = i < shortLen ? text[i + 1] - '0' : -1;
+                    while (next is >= 0 and <= 9 )
+                    {
                         i++;
+                        lhs = (lhs * 10) + next;
+                        next = i < shortLen ? text[i + 1] - '0' : -1;
+                    }
+
+                    break;
+                }
+                case 16:
+                {
+                    rhs = text[i] - '0';
+                    var next = i < shortLen ? text[i + 1] - '0' : -1;
+                    while (next is >= 0 and <= 9 )
+                    {
+                        i++;
+                        rhs = (rhs * 10) + next;
+                        next = i < shortLen ? text[i + 1] - '0' : -1;
+                    }
+
                     break;
                 }
                 case 7:
@@ -186,16 +206,9 @@ public class Day03
                 case 17:
                 {
                     if (enabled)
-                        total += int.Parse(text[lhsStart..lhsEnd]) * int.Parse(text[rhsStart..i]);
+                        total += (lhs * rhs);
                     break;
                 }
-                case 13:
-                    lhsStart = i + 1;
-                    break;
-                case 15:
-                    lhsEnd = i;
-                    rhsStart = i + 1;
-                    break;
             }
         }
         return total;
