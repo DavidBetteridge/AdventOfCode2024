@@ -104,7 +104,7 @@ public class Day04
                         if (Read(rowNumber, columnNumber, direction[0]) == 'M' && 
                             Read(rowNumber, columnNumber, direction[1]) == 'M' && 
                             Read(rowNumber, columnNumber, direction[2]) == 'S' && 
-                            Read(rowNumber, columnNumber, direction[2]) == 'S')
+                            Read(rowNumber, columnNumber, direction[3]) == 'S')
                         {
                             total++;
                         }

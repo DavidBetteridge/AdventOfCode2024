@@ -27,6 +27,6 @@ public class Day04Tests
     public void Test_Part2()
     {
         var solver = new Solutions.Day04();
-        Assert.Equal(3046, solver.Part2("Day04/input.txt"));  //3046
+        Assert.Equal(2011, solver.Part2("Day04/input.txt"));
     }
 }
