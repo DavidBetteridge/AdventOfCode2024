@@ -16,15 +16,6 @@ public class Day01BenchmarkTests
         var answer = solver.Part1("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day01/input.txt");
         if (answer != 1189304) throw new Exception("Wrong answer");
     }
-
-    [Benchmark(Baseline = false)]
-    [BenchmarkCategory("Part1")]
-    public void Day01_Part1_NoVectors()
-    {
-        var solver = new Day01();
-        var answer = solver.Part1_NoVec("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day01/input.txt");
-        if (answer != 1189304) throw new Exception("Wrong answer");
-    }
     
     [Benchmark(Baseline = true)]
     [BenchmarkCategory("Part2")]
