@@ -4,7 +4,7 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day03
 {
-    public int Part1(string filename)
+    public int Part1_Regex(string filename)
     {
         var text = File.ReadAllText(filename);
 
@@ -16,6 +16,146 @@ public class Day03
         return total;
     }
 
+    public int Part1_Fast(string filename)
+    {
+        var text = File.ReadAllBytes(filename).AsSpan();
+        var total = 0;
+        var i = 0;
+        while (i < text.Length - 7)
+        {
+            if (text[i] == 'm' && text[i+1] == 'u' && text[i+2] == 'l' && text[i+3] == '(')
+            {
+                i += 4;
+
+                if (text[i ] >= 48 && text[i ] <= 57)
+                {
+                    var lhs = text[i] - 48;
+                    i++;
+                    
+                    // Keep advancing whilst we have a number
+                    while (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                    {
+                        lhs = (lhs * 10) +  text[i] - 48;
+                        i++;
+                    }
+                    
+                    // Eat the comma
+                    if (i < text.Length && text[i] == ',')
+                    {
+                        i++;
+                        
+                        // Get the RHS
+                        if (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                        {
+                            var rhs = text[i] - 48;
+                            i++;
+
+                            // Keep advancing whilst we have a number
+                            while (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                            {
+                                rhs = (rhs * 10) + text[i] - 48;
+                                i++;
+                            }
+                            
+                            // Eat the bracket
+                            if (i < text.Length && text[i] == ')')
+                            {
+                                i++;
+                                total += (lhs * rhs);
+
+                            }
+                        }
+
+                    }
+                    
+                }
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        return total;
+    }
+    
+    public int Part2_Fast(string filename)
+    {
+        var text = File.ReadAllBytes(filename).AsSpan();
+        var total = 0;
+        var i = 0;
+        var enabled = true;
+        while (i < text.Length - 7)
+        {
+            if (text[i] == 'd' && text[i + 1] == 'o' && text[i + 2] == '(' && text[i + 3] == ')')
+            {
+                enabled = true;
+                i += 4;
+                continue;
+            }
+            
+            if (text[i] == 'd' && text[i + 1] == 'o' && text[i + 2] == 'n' && text[i + 3] == '\'' && text[i + 4] == 't' && text[i + 5] == '(' && text[i + 6] == ')')
+            {
+                enabled = false;
+                i += 7;
+                continue;
+            }
+            
+            if (text[i] == 'm' && text[i+1] == 'u' && text[i+2] == 'l' && text[i+3] == '(')
+            {
+                i += 4;
+
+                if (enabled && text[i ] >= 48 && text[i ] <= 57)
+                {
+                    var lhs = text[i] - 48;
+                    i++;
+                    
+                    // Keep advancing whilst we have a number
+                    while (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                    {
+                        lhs = (lhs * 10) +  text[i] - 48;
+                        i++;
+                    }
+                    
+                    // Eat the comma
+                    if (i < text.Length && text[i] == ',')
+                    {
+                        i++;
+                        
+                        // Get the RHS
+                        if (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                        {
+                            var rhs = text[i] - 48;
+                            i++;
+
+                            // Keep advancing whilst we have a number
+                            while (i < text.Length && text[i] >= 48 && text[i] <= 57)
+                            {
+                                rhs = (rhs * 10) + text[i] - 48;
+                                i++;
+                            }
+                            
+                            // Eat the bracket
+                            if (i < text.Length && text[i] == ')')
+                            {
+                                i++;
+                                total += (lhs * rhs);
+
+                            }
+                        }
+
+                    }
+                    
+                }
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        return total;
+    }
 
     
     public int Part2_StateMachine(string filename)
