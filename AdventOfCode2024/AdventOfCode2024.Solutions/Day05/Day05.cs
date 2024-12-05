@@ -1,16 +1,23 @@
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day05
 {
     public int Part1(string filename)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllText(filename).AsSpan();
         var inRules = true;
+        
         var rules = new Dictionary<int,List<int>>();
+        
         var total = 0;
-        foreach (var line in lines)
+        var seen = new HashSet<int>();
+        var done = new List<int>();
+        
+        
+        foreach (var line in lines.Split('\n'))
         {
-            if (line == "")
+            if (lines[line].Length == 0)
             {
                 inRules = false;
             }
@@ -18,10 +25,25 @@ public class Day05
             {
                 if (inRules)
                 {
-                    // Store rule
-                    var parts = line.Split('|').Select(int.Parse).ToArray();
-                    var key = parts[0];
-                    var value = parts[1];
+                    var key = lines[line][0] - '0';
+                    var j = 1;
+                    while (j < lines[line].Length && lines[line][j] != '|')
+                    {
+                        key = key * 10 + (lines[line][j] - '0');
+                        j++;
+                    }
+
+                    // Eat the pipe
+                    j++;
+                    
+                    var value = lines[line][j] - '0';
+                    j++;
+                    while (j < lines[line].Length)
+                    {
+                        value = value * 10 + (lines[line][j] - '0');
+                        j++;
+                    }
+
                     if (!rules.ContainsKey(key))
                         rules[key] = [];
                     rules[key].Add(value);
@@ -29,36 +51,47 @@ public class Day05
                 else
                 {
                     // Solve line
-                    var pages = line.Split(',').Select(int.Parse).ToArray();
                     var ok = true;
-                    var seen = new HashSet<int>();
-                    foreach (var page in pages)
+                    seen.Clear();
+                    done.Clear();
+                    var pageCount = 0;
+                    var k = 0;
+                    while (k < lines[line].Length)
                     {
+                        var page = lines[line][k] - '0';
+                        k++;
+                        while (k < lines[line].Length && lines[line][k] != ',')
+                        {
+                            page = page * 10 + (lines[line][k] - '0');
+                            k++;
+                        }
+            
+                        k++;  //eat ,
+                        
                         if (rules.TryGetValue(page, out var rulesForPage))
                         {
-                            foreach (var rule in rulesForPage)
+                            if (rulesForPage.Any(rule => seen.Contains(rule)))
                             {
-                                if (seen.Contains(rule))
-                                {
-                                    // Wrong order
-                                    ok = false;
-                                    break;
-                                }
-                            }    
+                                ok = false;
+                            }
                         }
 
                         if (!ok) break;
                         seen.Add(page);
+                        done.Add(page);
+                        pageCount++;
                     }
 
                     if (ok)
-                        total += pages[pages.Length / 2];
+                        total += done[pageCount/2];
+                        
                 }
             }
         }
 
         return total;
     }
+
     
     public int Part2(string filename)
     {
