@@ -1,43 +1,60 @@
 using System.Buffers;
 using System.Numerics;
 using System.Numerics.Tensors;
+using System.Reflection;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day01
 {
     public int Part1(string filename)
     {
-        var input = File.ReadAllText(filename).AsSpan();
+        var input = File.ReadAllBytes(filename).AsSpan();
 
         var lhs = new List<int>();
         var rhs = new List<int>();
 
-        var sv = SearchValues.Create(" \n");
-
-        var state = 0;
-        foreach (var bit in input.SplitAny(sv))
+        var i = 0;
+        while (i < input.Length)
         {
-            if (state == 0)
+            // 58789   28882
+            
+            // First number
+            var l = input[i] - '0';
+            i++;
+            while (input[i] != ' ')
             {
-                lhs.Add(int.Parse(input[bit]));
-                state = 1;
+                l = l * 10 + (input[i] - '0');
+                i++;
             }
-            else if (state == 3)
+
+            lhs.Add(l);
+            
+            // Spaces
+            while (input[i] == ' ')
+                i++;
+            
+            // Second number
+            var r = input[i] - '0';
+            i++;
+            while (i < input.Length && input[i] != '\n')
             {
-                rhs.Add(int.Parse(input[bit]));
-                state = 0;
+                r = r * 10 + (input[i] - '0');
+                i++;
             }
-            else
-            {
-                state++;
-            }
+            rhs.Add(r);
+            
+            // Skip the newline
+            i++;
         }
         
         lhs.Sort();
         rhs.Sort();
-        
-        Span<int> la = lhs.ToArray();
-        Span<int> ra = rhs.ToArray();
+
+        var listType = typeof(List<int>);
+        var itemsField = listType.GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
+        var la = new Span<int>((int[])itemsField!.GetValue(lhs)!, 0, lhs.Count) ;
+        var ra = new Span<int>((int[])itemsField.GetValue(rhs)!, 0, rhs.Count) ;
         
         TensorPrimitives.Subtract(la, ra, la);
         TensorPrimitives.Abs(la,la);
