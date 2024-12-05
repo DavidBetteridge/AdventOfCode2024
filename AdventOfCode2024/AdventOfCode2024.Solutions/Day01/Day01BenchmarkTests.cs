@@ -1,11 +1,15 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 
 namespace AdventOfCode2024.Solutions;
 
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory), CategoriesColumn]
 [MemoryDiagnoser(true)]
+[MarkdownExporterAttribute.GitHub]
 public class Day01BenchmarkTests
 {
     [Benchmark(Baseline = true)]
+    [BenchmarkCategory("Part1")]
     public void Day01_Part1()
     {
         var solver = new Day01();
@@ -14,14 +18,16 @@ public class Day01BenchmarkTests
     }
 
     [Benchmark(Baseline = false)]
-    public void Day01_Part1_NoVec()
+    [BenchmarkCategory("Part1")]
+    public void Day01_Part1_NoVectors()
     {
         var solver = new Day01();
         var answer = solver.Part1_NoVec("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day01/input.txt");
         if (answer != 1189304) throw new Exception("Wrong answer");
     }
     
-    [Benchmark]
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("Part2")]
     public void Day01_Part2()
     {
         var solver = new Day01();
