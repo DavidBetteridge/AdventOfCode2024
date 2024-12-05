@@ -14,7 +14,6 @@ public class Day05
         var seen = new HashSet<int>();
         var done = new List<int>();
         
-        
         foreach (var line in lines.Split('\n'))
         {
             if (lines[line].Length == 0)
@@ -91,17 +90,18 @@ public class Day05
 
         return total;
     }
-
     
     public int Part2(string filename)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllText(filename).AsSpan();
         var inRules = true;
         var rules = new Dictionary<int,List<int>>();
         var total = 0;
-        foreach (var line in lines)
+        var pages = new List<int>();
+        
+        foreach (var line in lines.Split('\n'))
         {
-            if (line == "")
+            if (lines[line].Length == 0)
             {
                 inRules = false;
             }
@@ -109,57 +109,88 @@ public class Day05
             {
                 if (inRules)
                 {
-                    // Store rule
-                    var parts = line.Split('|').Select(int.Parse).ToArray();
-                    var key = parts[0];
-                    var value = parts[1];
+                    var key = lines[line][0] - '0';
+                    var j = 1;
+                    while (j < lines[line].Length && lines[line][j] != '|')
+                    {
+                        key = key * 10 + (lines[line][j] - '0');
+                        j++;
+                    }
+
+                    // Eat the pipe
+                    j++;
+                    
+                    var value = lines[line][j] - '0';
+                    j++;
+                    while (j < lines[line].Length)
+                    {
+                        value = value * 10 + (lines[line][j] - '0');
+                        j++;
+                    }
+
                     if (!rules.ContainsKey(key))
                         rules[key] = [];
                     rules[key].Add(value);
                 }
                 else
                 {
-                    // Solve line
-                    var pages = line.Split(',').Select(int.Parse).ToArray();
+                    // Find all page numbers
+                    pages.Clear();
+                    var k = 0;
+                    while (k < lines[line].Length)
+                    {
+
+                        var page = lines[line][k] - '0';
+                        k++;
+                        while (k < lines[line].Length && lines[line][k] != ',')
+                        {
+                            page = page * 10 + (lines[line][k] - '0');
+                            k++;
+                        }
+
+                        pages.Add(page);
+
+                        k++; //eat ,
+                    }
+
                     var ok = false;
                     var corrected = false;
 
                     while (!ok)
                     {
                         ok = true;
-                        var seen = new Dictionary<int, int>();
-                        for (var i = 0; i < pages.Length; i++)
+                        for (var i = 1; i < pages.Count; i++)
                         {
                             var page = pages[i];
                             if (rules.TryGetValue(page, out var rulesForPage))
                             {
-                                foreach (var rule in rulesForPage)
+                                for (var j = 0; j < i; j++)
                                 {
-                                    if (seen.TryGetValue(rule, out var location))
+                                    var page2 = pages[j];
+                                    if (rulesForPage.Contains(page2))
                                     {
-                                        // Swap
-                                        pages[location] = pages[i];
-                                        pages[i] = rule;
+                                        // We have a problem
+                                        pages[i] = page2;
+                                        pages[j] = page;
+                                        page = pages[i];
                                         corrected = true;
                                         ok = false;
-                                        break;
                                     }
                                 }
                             }
-                            if (!ok) break;
-                            seen.Add(page, i);
                         }
                     }
-
+                    
                     if (corrected)
                     {
-                        total += pages[pages.Length / 2];                        
+                        total += pages[pages.Count / 2];                        
                     }
-
+      
                 }
             }
         }
-
         return total;
     }
+    
+    
 }
