@@ -8,7 +8,7 @@ public class Day06
         var input = File.ReadAllBytes(filename).AsSpan();
         var map = new bool[input.Length];
         var visited = new HashSet<int>();
-        var guard = new Location(0, 0);
+        var guard = -1;
         var direction = 0; // 0 means N,  1=E, 2=S and 3=W
         var i = 0;
         var width2 = -1;
@@ -22,8 +22,8 @@ public class Day06
 
                 if (input[i] == '^')
                 {
-                    guard = new Location((i - height2) - (width2 * height2), height2);
-                    visited.Add(i-height2);
+                    guard = i - height2;
+                    visited.Add(guard);
                 }
 
                 i++;
@@ -41,30 +41,36 @@ public class Day06
         while (true)
         {
             // Try to walk forward
-            var next = NextLocation(guard, direction);
-            if (next.X < 0 || next.X >= width2 || next.Y < 0 || next.Y >= height2) break;
-            if (map[(next.Y * width2) + next.X])
+            var next = direction switch
+            {
+                0 => guard - width2,
+                1 => guard + 1,
+                2 => guard + width2,
+                3 => guard - 1,
+                _ => throw new Exception("currentDirection out of range")
+            };
+            
+            // Would that be out of bounds
+            var ok = direction switch
+            {
+                0 => next >= 0,
+                1 => next % width2 != 0,  //Walk right, so can't be at x=0
+                2 => next < (width2 * height2),
+                3 => next % width2 != (width2-1),   // Walked left so can be width2-1
+                _ => throw new Exception("currentDirection out of range")
+            };
+            
+            if (!ok) break;
+            if (map[next])
                 direction = (direction + 1) % 4; // turn right
             else
             {
                 guard = next;
-                visited.Add((next.Y * width2) + next.X);
+                visited.Add(guard);
             }
         }
         
         return visited.Count;
-
-        Location NextLocation(Location currentLocation, int currentDirection)
-        {
-            return currentDirection switch
-            {
-                0 => currentLocation with { Y = currentLocation.Y - 1 },
-                1 => currentLocation with { X = currentLocation.X + 1 },
-                2 => currentLocation with { Y = currentLocation.Y + 1 },
-                3 => currentLocation with { X = currentLocation.X - 1 },
-                _ => throw new Exception("currentDirection out of range")
-            };
-        }
     }
     
     
