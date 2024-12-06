@@ -4,44 +4,68 @@ public class Day02
 {
     public int Part1(string filename)
     {
-        var lines = File.ReadAllText(filename).AsSpan();
+        var input = File.ReadAllBytes(filename).AsSpan();
         var result = 0;
-        foreach (var lineRange in lines.Split('\n'))
+        var i = 0;
+        while (i < input.Length)
         {
-            var i = 0;
             var increasing = false;
             var previousValue = 0;
-            result++;
-            foreach (var valRange in lines[lineRange].Split(' '))
-            {
-                var currentVal = int.Parse(lines[lineRange][valRange]);
+            var count = 0;
+            var ok = true;
 
-                if (i > 0)
+            while (i < input.Length && input[i] != '\n')
+            {
+                var currentVal = input[i] - '0';
+                i++;
+                while (i < input.Length && input[i] != ' ' && input[i] != '\n')
+                {
+                    currentVal = currentVal * 10 + (input[i] - '0');
+                    i++;
+                }
+                
+                if (i < input.Length && input[i] == ' ')
+                    i++;
+                
+                if (count != 0)
                 {
                     var diff = currentVal - previousValue;
                     if (diff == 0 || Math.Abs(diff) > 3)
                     {
-                        result--;
+                        ok=false;
                         break;
                     }
 
-                    if (i == 1)
+                    if (count == 1)
                         increasing = diff > 0;
                     else if (increasing && diff < 0)
                     {
-                        result--;
+                        ok=false;
                         break;
                     }
                     else if (!increasing && diff > 0)
                     {
-                        result--;
+                        ok=false;
                         break;
                     }
                 }
 
                 previousValue = currentVal;
-                i++;
+                count++;
             }
+
+            
+            if (ok) 
+                result++;
+            else
+            {
+                // We finished early so fast walk to the end of the line
+                while (i < input.Length && input[i] != '\n')
+                    i++;
+            }
+            
+            i++;
+
         }
 
         return result;
