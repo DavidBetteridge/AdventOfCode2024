@@ -88,12 +88,13 @@ public class Day06
         {
             // Try to walk forward
             var next = NextLocation(guard, direction);
+            if (next.X < 0 || next.X >= width || next.Y < 0 || next.Y >= lab.Length) break;
+            
             if (obstructions.Contains(next))
                 direction = (direction + 1) % 4; // turn right
             else
             {
                 guard = next;
-                if (!InLab()) break;
                 visited.Add(guard);
             }
         }
@@ -101,6 +102,7 @@ public class Day06
         // Other than the initial location, we have to try adding an obstruction
         // in each location and seeing if it causes a loop.
         var positions = 0;
+        var route = new HashSet<(Location, int)>();
         foreach (var possible in visited)
         {
             if (possible != initialLocation)
@@ -108,7 +110,7 @@ public class Day06
                 obstructions.Add(possible);
                 guard = initialLocation;
                 direction = 0;
-                var route = new HashSet<(Location, int)>();
+                route.Clear();
                 while (true)
                 {
                     // Try to walk forward
@@ -118,7 +120,7 @@ public class Day06
                     else
                     {
                         guard = next;
-                        if (!InLab()) break;
+                        if (guard.X < 0 || guard.X == width || guard.Y < 0 || guard.Y == lab.Length) break;
                         if (route.Contains((guard, direction)))
                         {
                             // Looping
@@ -145,10 +147,6 @@ public class Day06
                 _ => throw new Exception("currentDirection out of range")
             };
         }
-        
-        bool InLab()
-        {
-            return guard.X >= 0 && guard.X < width && guard.Y >= 0 && guard.Y < lab.Length;
-        }
+   
     }
 }
