@@ -81,6 +81,8 @@ public class Day06
     
     public int Part2(string filename)
     {
+        //************************************************
+        // Part 1 - Parse the file
         var input = File.ReadAllBytes(filename).AsSpan();
         var map = new bool[input.Length].AsSpan();
         var visited = new bool[input.Length].AsSpan();
@@ -114,6 +116,9 @@ public class Day06
             i++; //eat the new line
         }
         
+        
+        //************************************************
+        // Part 2 - Find the basic path
         var initialLocation = guard;
         while (true)
         {
@@ -148,13 +153,13 @@ public class Day06
         }
         
         
+        //************************************************
+        // Part 3 - Work out positions for obstructions
+        
         // Other than the initial location, we have to try adding an obstruction
         // in each location and seeing if it causes a loop.
         var positions = 0;
-        var n = new bool[input.Length].AsSpan();
-        var s = new bool[input.Length].AsSpan();
-        var w = new bool[input.Length].AsSpan();
-        var e = new bool[input.Length].AsSpan();
+        var route = new bool[input.Length*4].AsSpan();
         
         for (var j = 0; j < input.Length; j++)
         {
@@ -164,10 +169,7 @@ public class Day06
                 guard = initialLocation;
                 direction = 0;
                 
-                n.Clear();
-                s.Clear();
-                w.Clear();
-                e.Clear();
+                route.Clear();
                     
                 while (true)
                 {
@@ -199,26 +201,13 @@ public class Day06
                     {
                         guard = next;
                         
-                        if (
-                            (direction == 0 && n[next]) ||
-                            (direction == 1 && e[next]) ||
-                            (direction == 2 && s[next]) ||
-                            (direction == 3 && w[next])
-                            )
+                        if (route[(direction * input.Length) + next])
                         {
                             // Looping
                             positions++;
                             break;
                         }
-
-                        if (direction == 0)
-                            n[next] = true;
-                        else if (direction == 1)
-                            e[next] = true;
-                        else if (direction == 2)
-                            s[next] = true;
-                        else if (direction == 3)
-                            w[next] = true;
+                        route[(direction * input.Length) + next] = true;
                     }
                 }
                 map[j] = false;
