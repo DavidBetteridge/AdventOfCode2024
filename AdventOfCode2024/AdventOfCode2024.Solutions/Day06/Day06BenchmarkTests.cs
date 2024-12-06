@@ -24,6 +24,5 @@ public class Day06BenchmarkTests
         var solver = new Day06();
         var answer = solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day06/input.txt");
         if (answer != 1933) throw new Exception("Wrong answer");
-   }
-    
-}
+    }
+ }

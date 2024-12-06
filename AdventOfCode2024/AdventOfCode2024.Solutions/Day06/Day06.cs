@@ -189,7 +189,7 @@ public class Day06
                         0 => next >= 0,
                         1 => next % width != 0,  //Walked right, so can't be at x=0
                         2 => next < (width * height),
-                        3 => next % width != (width-1),   // Walked left so can be width2-1
+                        3 => next % width != (width-1),   // Walked left so can't be width2-1
                         _ => throw new Exception("currentDirection out of range")
                     };
                     
