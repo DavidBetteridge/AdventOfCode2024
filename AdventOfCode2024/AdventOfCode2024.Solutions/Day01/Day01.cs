@@ -96,12 +96,12 @@ public class Day01
                 r = r * 10 + (input[i] - '0');
                 i++;
             }
-            rhs[r] = rhs.GetValueOrDefault(r) + 1;
+            rhs[r] = rhs.GetValueOrDefault(r) + r;
             
             // Skip the newline
             i++;
         }
         
-        return lhs.Sum(l => l * rhs.GetValueOrDefault(l));
+        return lhs.Sum(l => rhs.GetValueOrDefault(l));
     }
 }
