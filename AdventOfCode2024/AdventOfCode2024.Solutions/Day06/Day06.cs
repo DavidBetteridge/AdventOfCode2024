@@ -5,37 +5,50 @@ public class Day06
     private record struct Location(int X, int Y);
     public int Part1(string filename)
     {
-        var lab = File.ReadAllLines(filename);
-        var guard = new Location(0,0);
-        var direction = 0;  // 0 means N,  1=E, 2=S and 3=W
-        
-        var obstructions = new HashSet<Location>();
-        var visited = new HashSet<Location>();
-
-        var width = lab[0].Length;
-        for (var rowNumber = 0; rowNumber < lab.Length; rowNumber++)
+        var input = File.ReadAllBytes(filename).AsSpan();
+        var map = new bool[input.Length];
+        var visited = new HashSet<int>();
+        var guard = new Location(0, 0);
+        var direction = 0; // 0 means N,  1=E, 2=S and 3=W
+        var i = 0;
+        var width2 = -1;
+        var height2 = 0;
+        while (i < input.Length)
         {
-            for (var columnNumber = 0; columnNumber < width; columnNumber++)
+            while (i < input.Length && input[i] != '\n')
             {
-                if (lab[rowNumber][columnNumber] == '#')
-                    obstructions.Add(new Location(columnNumber, rowNumber));
-                else if (lab[rowNumber][columnNumber] == '^')
-                    guard = new Location(columnNumber, rowNumber);
-            }
-        }
+                if (input[i] == '#')
+                    map[i-height2] = true;
 
-        visited.Add(guard);
+                if (input[i] == '^')
+                {
+                    guard = new Location((i - height2) - (width2 * height2), height2);
+                    visited.Add(i-height2);
+                }
+
+                i++;
+            }
+
+            // End of the line
+            if (width2 == -1)
+                width2 = i;
+
+            height2++;
+        
+            i++; //eat the new line
+        }
+        
         while (true)
         {
             // Try to walk forward
             var next = NextLocation(guard, direction);
-            if (obstructions.Contains(next))
+            if (next.X < 0 || next.X >= width2 || next.Y < 0 || next.Y >= height2) break;
+            if (map[(next.Y * width2) + next.X])
                 direction = (direction + 1) % 4; // turn right
             else
             {
                 guard = next;
-                if (!InLab()) break;
-                visited.Add(guard);
+                visited.Add((next.Y * width2) + next.X);
             }
         }
         
@@ -51,11 +64,6 @@ public class Day06
                 3 => currentLocation with { X = currentLocation.X - 1 },
                 _ => throw new Exception("currentDirection out of range")
             };
-        }
-        
-        bool InLab()
-        {
-            return guard.X >= 0 && guard.X < width && guard.Y >= 0 && guard.Y < lab.Length;
         }
     }
     
