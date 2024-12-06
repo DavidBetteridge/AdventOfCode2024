@@ -56,7 +56,7 @@ public class Day06
                 0 => next >= 0,
                 1 => next % width != 0,  //Walked right, so can't be at x=0
                 2 => next < (width * height),
-                3 => next % width != (width-1),   // Walked left so can be width2-1
+                3 => next % width != (width-1),   // Walked left so can't be width2-1
                 _ => throw new Exception("currentDirection out of range")
             };
             
@@ -120,6 +120,8 @@ public class Day06
         //************************************************
         // Part 2 - Find the basic path
         var initialLocation = guard;
+        var routeTaken = new List<(int,int)>();
+        routeTaken.Add((guard,direction));
         while (true)
         {
             // Try to walk forward
@@ -149,6 +151,7 @@ public class Day06
             {
                 guard = next;
                 visited[guard]=true;
+                routeTaken.Add((guard, direction));
             }
         }
         
@@ -160,14 +163,19 @@ public class Day06
         // in each location and seeing if it causes a loop.
         var positions = 0;
         var route = new bool[input.Length*4].AsSpan();
+        var locationChecked = new bool[input.Length].AsSpan();
         
-        for (var j = 0; j < input.Length; j++)
+        for (var k = 1; k < routeTaken.Count; k++)
         {
-            if (visited[j] && j != initialLocation)
+            var (j, _) = routeTaken[k];
+            
+            if (visited[j] && !locationChecked[j])
             {
+                var (previousLoc, dirAtTime) = routeTaken[k-1];
+                locationChecked[j] = true;
                 map[j] = true;
-                guard = initialLocation;
-                direction = 0;
+                guard = previousLoc;
+                direction = dirAtTime;
                 
                 route.Clear();
                     
