@@ -25,4 +25,5 @@ public class Day01BenchmarkTests
         var answer = solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day01/input.txt");
         if (answer != 24349736) throw new Exception("Wrong answer");
     }
+    
 }

@@ -30,5 +30,4 @@ public class Day01Tests
         var solver = new Solutions.Day01();
         Assert.Equal(24349736, solver.Part2("Day01/input.txt"));
     }
-    
 }
