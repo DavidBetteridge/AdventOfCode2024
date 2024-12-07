@@ -51,8 +51,8 @@ public class Day07
             var itemsField = listType.GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
             var inputsSpan = new Span<int>((int[])itemsField!.GetValue(inputs)!, 0, inputs.Count) ;
             
-            if (Solve((ulong)testValue, (ulong)inputsSpan[0], inputsSpan[1..]))
-                total += (ulong)testValue;
+            if (Solve(testValue, (ulong)inputsSpan[0], inputsSpan[1..]))
+                total += testValue;
         }
 
         return total;
@@ -79,6 +79,8 @@ public class Day07
         var i = 0;
         var inputs = new List<int>();
         ulong total = 0;
+        var listType = typeof(List<int>);
+        var itemsField = listType.GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
 
         while (i < input.Length)
         {
@@ -101,12 +103,10 @@ public class Day07
                 // Eat the input value
                 var inputValue = (input[i] - '0');
                 i++;
-                var multiplier = 10;
                 while (i < input.Length && input[i] != ' ' && input[i] != '\n')
                 {
                     inputValue = inputValue * 10 + (input[i] - '0');
                     i++;
-                    multiplier *= 10;
                 }
                 inputs.Add(inputValue);
                 
@@ -118,12 +118,10 @@ public class Day07
             // Eat the new line
             i++;
 
-            var listType = typeof(List<int>);
-            var itemsField = listType.GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
             var inputsSpan = new Span<int>((int[])itemsField!.GetValue(inputs)!, 0, inputs.Count) ;
             
-            if (Solve((ulong)testValue, (ulong)inputsSpan[0], inputsSpan[1..]))
-                total += (ulong)testValue;
+            if (Solve(testValue, (ulong)inputsSpan[0], inputsSpan[1..]))
+                total += testValue;
         }
 
         return total;

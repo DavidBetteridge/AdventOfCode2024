@@ -15,7 +15,7 @@ public class Day07Tests
         var solver = new Solutions.Day07();
         Assert.Equal((ulong)1620690235709, solver.Part1("Day07/input.txt")); 
     }
-   
+    
     [Fact]
     public void Test_Part2_Sample()
     {
