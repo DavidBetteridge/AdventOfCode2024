@@ -8,25 +8,33 @@ public class Day08
     
     public long Part1(string filename)
     {
-        var lines = File.ReadAllLines(filename);
-        var height = lines.Length;
-        var width = lines[0].Length;
-        var antennas = new Dictionary<char, List<Location>>();
-
-        for (var rowNumber = 0; rowNumber < width; rowNumber++)
+        var input = File.ReadAllBytes(filename);
+        var pos = 0;
+        var height = 0;
+        var width = 0;
+        var antennas = new Dictionary<byte, List<Location>>();
+        while (pos < input.Length)
         {
-            for (var columnNumber = 0; columnNumber < height; columnNumber++)
+            //Consume line
+            width = 0;
+            while (pos < input.Length && input[pos] != '\n')
             {
-                var cell = lines[rowNumber][columnNumber];
-                if (cell != '.')
+                if (input[pos] != '.')
                 {
-                    if (!antennas.ContainsKey(cell))
+                    if (!antennas.TryGetValue(input[pos], out List<Location>? value))
                     {
-                        antennas[cell] = [];
+                        value = [];
+                        antennas[input[pos]] = value;
                     }
-                    antennas[cell].Add(new Location(columnNumber, rowNumber));
+
+                    value.Add(new Location(width, height));
                 }
+                width++;
+                pos++;  // advance
             }
+
+            pos++;  // Consume newline
+            height++;
         }
 
         var antinodes = new HashSet<int>();
@@ -61,28 +69,35 @@ public class Day08
         return antinodes.Count;
     }
     
-    
     public long Part2(string filename)
     {
-        var lines = File.ReadAllLines(filename);
-        var height = lines.Length;
-        var width = lines[0].Length;
-        var antennas = new Dictionary<char, List<Location>>();
-
-        for (var rowNumber = 0; rowNumber < width; rowNumber++)
+        var input = File.ReadAllBytes(filename);
+        var pos = 0;
+        var height = 0;
+        var width = 0;
+        var antennas = new Dictionary<byte, List<Location>>();
+        while (pos < input.Length)
         {
-            for (var columnNumber = 0; columnNumber < height; columnNumber++)
+            //Consume line
+            width = 0;
+            while (pos < input.Length && input[pos] != '\n')
             {
-                var cell = lines[rowNumber][columnNumber];
-                if (cell != '.')
+                if (input[pos] != '.')
                 {
-                    if (!antennas.ContainsKey(cell))
+                    if (!antennas.TryGetValue(input[pos], out List<Location>? value))
                     {
-                        antennas[cell] = [];
+                        value = [];
+                        antennas[input[pos]] = value;
                     }
-                    antennas[cell].Add(new Location(columnNumber, rowNumber));
+
+                    value.Add(new Location(width, height));
                 }
+                width++;
+                pos++;  // advance
             }
+
+            pos++;  // Consume newline
+            height++;
         }
 
         var antinodes = new HashSet<int>();

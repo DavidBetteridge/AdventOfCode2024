@@ -15,7 +15,7 @@ public class Day08Tests
         var solver = new Solutions.Day08();
         Assert.Equal(359, solver.Part1("Day08/input.txt")); 
     }
-    
+
     [Fact]
     public void Test_Part2_Sample()
     {
