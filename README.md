@@ -7,7 +7,8 @@
 | [Day 3](https://adventofcode.com/2024/day/1) | ⭐ | ⭐ |
 | [Day 4](https://adventofcode.com/2024/day/1) | ⭐ | ⭐ |
 | [Day 5](https://adventofcode.com/2024/day/1) | ⭐ | ⭐ |
-
+| [Day 6](https://adventofcode.com/2024/day/1) | ⭐ | ⭐ |
+| [Day 7](https://adventofcode.com/2024/day/1) | ⭐ | ⭐ |
 
 | Method      | Categories | Mean     | Error   | StdDev  | Ratio | Gen0    | Gen1   | Allocated | Alloc Ratio |
 |------------ |----------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
@@ -36,9 +37,10 @@
 |             |            |              |             |             |       |         |         |         |         |           |             |
 | Day06_Part2 | Part2      | 24,380.84 us | 42.090 us | 39.371 us |  1.00 | 31.2500 | 261.57 KB |        1.00 |
 |             |            |              |             |             |       |         |         |         |         |           |             |
-| Day07_Part1 | Part1      |   235.1 us |  4.63 us |  7.99 us |  1.00 |    0.05 | 76.1719 | 25.3906 | 629.75 KB |        1.00 |
-|             |            |            |          |          |       |         |         |         |           |             |
-| Day07_Part2 | Part2      | 8,151.7 us | 99.88 us | 93.43 us |  1.00 |    0.02 | 78.1250 | 15.6250 | 633.76 KB |        1.00 s
+| Day07_Part1 | Part1      | 198.7 us | 18.52 us | 51.32 us | 179.5 us |  1.05 |    0.35 | 74.2188 | 23.4375 |      - | 629.11 KB |        1.00 |
+|             |            |          |          |          |          |       |         |         |         |        |           |             |
+| Day07_Part2 | Part2      | 186.8 us |  3.72 us |  3.29 us | 186.0 us |  1.00 |    0.02 | 77.6367 | 25.8789 | 1.4648 | 632.32 KB |        1.00 |
+
 
 ### Run benchmarks
 
