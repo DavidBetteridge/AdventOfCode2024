@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day08
@@ -27,7 +29,7 @@ public class Day08
             }
         }
 
-        var antinodes = new HashSet<Location>();
+        var antinodes = new HashSet<int>();
         
         // Naive solution
         foreach (var antenna in antennas)
@@ -43,12 +45,12 @@ public class Day08
                     var xTry = locations[i].X - xDiff;
                     var yTry = locations[i].Y - yDiff;
                     if (xTry >= 0 && yTry >= 0 && xTry < width && yTry < height)
-                        antinodes.Add(new Location(xTry, yTry));
+                        antinodes.Add(yTry*width+xTry);
                     
                     xTry = locations[j].X + xDiff;
                     yTry = locations[j].Y + yDiff;
                     if (xTry >= 0 && yTry >= 0 && xTry < width && yTry < height)
-                        antinodes.Add(new Location(xTry, yTry));
+                        antinodes.Add(yTry*width+xTry);
                     
 
                 }
@@ -83,7 +85,7 @@ public class Day08
             }
         }
 
-        var antinodes = new HashSet<Location>();
+        var antinodes = new HashSet<int>();
         
         // Naive solution
         foreach (var antenna in antennas)
@@ -100,7 +102,7 @@ public class Day08
                     var yTry = locations[i].Y;
                     while (xTry >= 0 && yTry >= 0 && xTry < width && yTry < height)
                     {
-                        antinodes.Add(new Location(xTry, yTry));
+                        antinodes.Add(yTry*width+xTry);
                         xTry -= xDiff;
                         yTry -= yDiff;
                     }
@@ -109,7 +111,7 @@ public class Day08
                     yTry = locations[j].Y;
                     while (xTry >= 0 && yTry >= 0 && xTry < width && yTry < height)
                     {
-                        antinodes.Add(new Location(xTry, yTry));
+                        antinodes.Add(yTry*width+xTry);
                         xTry += xDiff;
                         yTry += yDiff;
                     }
