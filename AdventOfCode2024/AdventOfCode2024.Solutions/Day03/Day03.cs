@@ -16,7 +16,7 @@ public class Day03
         return total;
     }
 
-    public int Part1_Fast(string filename)
+    public int Part1(string filename)
     {
         var text = File.ReadAllBytes(filename).AsSpan();
         var total = 0;
@@ -83,7 +83,7 @@ public class Day03
         return total;
     }
 
-    public int Part2_Fast(string filename)
+    public int Part2(string filename)
     {
         var text = File.ReadAllBytes(filename).AsSpan();
         var total = 0;
