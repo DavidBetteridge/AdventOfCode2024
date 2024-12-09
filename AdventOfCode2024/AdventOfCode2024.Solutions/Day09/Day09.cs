@@ -173,6 +173,8 @@ public class Day09
         for (var j = 1; j < 10; j++)
             freespaceLists[j] = [];
 
+        var freespaceListHeads = new int[10];
+        
         // Parse file
         while (i < input.Length)
         {
@@ -210,9 +212,10 @@ public class Day09
             FreeSpaceBlockB? freeSpaceBlockPointer = null;
             for (var j = fileToExamine.Value.Length; j < 10; j++)
             {
-                if (freespaceLists[j].Count > 0)
+                var headOfList = freespaceListHeads[j];
+                if (headOfList < freespaceLists[j].Count)
                 {
-                    var entry = freespaceLists[j][0];
+                    var entry = freespaceLists[j][headOfList];
                     if (entry.OriginalPos < fileToExamine.Value.OriginalPos)
                     {
                         if (freeSpaceBlockPointer is null || freeSpaceBlockPointer.OriginalPos > entry.OriginalPos)
@@ -225,7 +228,7 @@ public class Day09
             {
                 // We have a space where we can insert the file
                 var freeSpace = freeSpaceBlockPointer.Block;
-                freespaceLists[freeSpace.Value.Length].Remove(freeSpaceBlockPointer);
+                freespaceListHeads[freeSpace.Value.Length] += 1;
                 
                 var remaining = freeSpace.Value.Length - fileToExamine.Value.Length;
                 freeSpace.Value.FileId = fileToExamine.Value.FileId;
