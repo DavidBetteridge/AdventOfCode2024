@@ -8,13 +8,13 @@ public class Day09
     {
         public int FileId { get; set; } = FileId;
         public int Length { get; set; } = Length;
+        public int OriginalPos { get; set; } = OriginalPos;
     }
 
     public long Part1(string filename)
     {
         var input = File.ReadAllBytes(filename);
         var i = 0;
-        var freeSpaceBlockCount = 0;
         var nextFileId = 0;
         var blocks = new LinkedList<Block>();
 
@@ -29,7 +29,6 @@ public class Day09
             else
             {
                 blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
-                freeSpaceBlockCount++;
             }
 
             i++;
@@ -43,11 +42,10 @@ public class Day09
         if (fileToExamine!.Value.FileId == FreeSpace)
         {
             // The last entry was freespace
-            freeSpaceBlockCount--;
             fileToExamine = fileToExamine.Previous;
         }
 
-        while (freeSpaceBlockCount > 0)
+        while (fileToExamine is not null && nextFree is not null && nextFree.Value.OriginalPos < fileToExamine.Value.OriginalPos)
         {
             // We want to move the file final into the first free space.
 
@@ -57,22 +55,15 @@ public class Day09
                 // Swap the file with the free space
                 nextFree.Value.FileId = fileToExamine!.Value.FileId;
                 fileToExamine!.Value.FileId = FreeSpace;
-                freeSpaceBlockCount--;
                 
                 // Find the next free block
                 nextFree = nextFree.Next;
                 while (nextFree is not null && nextFree!.Value.FileId != FreeSpace)
                     nextFree = nextFree.Next;
 
-                blocks.Remove(fileToExamine);
-                fileToExamine = blocks.Last;
-                if (fileToExamine!.Value.FileId == FreeSpace)
-                {
-                    // The last entry was freespace
-                    freeSpaceBlockCount--;
-                    blocks.RemoveLast();
-                    fileToExamine = blocks.Last;
-                }
+                fileToExamine = fileToExamine.Previous;
+                while (fileToExamine is not null && fileToExamine!.Value.FileId == FreeSpace)
+                    fileToExamine = fileToExamine.Previous;
             }
 
 
@@ -82,24 +73,19 @@ public class Day09
                 var remaining = nextFree!.Value.Length - fileToExamine!.Value.Length;
                  nextFree.Value.FileId = fileToExamine!.Value.FileId;
                  nextFree.Value.Length = fileToExamine!.Value.Length;
+                 fileToExamine!.Value.FileId = FreeSpace;
 
                 //Renaming space
                 blocks.AddAfter(
                     nextFree,
                     new LinkedListNode<Block>(
-                        new Block(FreeSpace, remaining, i))
+                        new Block(FreeSpace, remaining, nextFree.Value.OriginalPos))
                 );
                 nextFree = nextFree.Next;
 
-                blocks.Remove(fileToExamine);
-                fileToExamine = blocks.Last;
-                if (fileToExamine!.Value.FileId == FreeSpace)
-                {
-                    // The last entry was freespace
-                    freeSpaceBlockCount--;
-                    blocks.RemoveLast();
-                    fileToExamine = blocks.Last;
-                }
+                fileToExamine = fileToExamine.Previous;
+                while (fileToExamine is not null && fileToExamine!.Value.FileId == FreeSpace)
+                    fileToExamine = fileToExamine.Previous;
             }
 
 
@@ -107,7 +93,6 @@ public class Day09
             else if (fileToExamine!.Value.Length > nextFree!.Value.Length)
             {
                 var spaceAvailable = nextFree!.Value.Length;
-                freeSpaceBlockCount--;
                 nextFree.Value.FileId = fileToExamine!.Value.FileId;
 
                 // Find the next free block
@@ -119,13 +104,14 @@ public class Day09
                 fileToExamine.Value.Length -= spaceAvailable;
             }
         }
-
+        
         // Walk list to create checksum
         var total = 0L;
         var position = 0;
         var block = blocks.First!;
         do
         {
+            if (block.Value.FileId == FreeSpace) break;
             // Loop over the length
             for (var j = 0; j < block.Value.Length; j++)
             {
