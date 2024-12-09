@@ -151,4 +151,120 @@ public class Day09
 
         return total;
     }
+    
+    
+      public long Part2(string filename)
+    {
+        var input = File.ReadAllBytes(filename);
+        var i = 0;
+        var nextFileId = 0;
+        var blocks = new LinkedList<Block>();
+
+        // Parse file
+        while (i < input.Length)
+        {
+            if (i % 2 == 0)
+            {
+                blocks.AddLast(new Block(nextFileId, input[i] - '0'));
+                nextFileId++;
+            }
+            else
+            {
+                blocks.AddLast(new Block(FreeSpace, input[i] - '0'));
+            }
+
+            i++;
+        }
+
+        // Find the last file
+        var fileToExamine = blocks.Last;
+        if (fileToExamine!.Value.FileId == FreeSpace)
+        {
+            // The last entry was freespace
+            blocks.RemoveLast();
+            fileToExamine = blocks.Last;
+        }
+
+        while (fileToExamine is not null && fileToExamine.Value.FileId != FreeSpace)
+        {
+            var freeSpace = blocks.First;
+            while (freeSpace is not null && (freeSpace.Value.FileId != FreeSpace ||
+                                             freeSpace.Value.Length < fileToExamine.Value.Length))
+            {
+                if (freeSpace!.Value.FileId == fileToExamine.Value.FileId)
+                    freeSpace = null;
+                else
+                    freeSpace = freeSpace.Next;
+            }
+
+            if (freeSpace is not null &&
+                freeSpace.Value.FileId == FreeSpace &&
+                freeSpace.Value.Length >= fileToExamine.Value.Length)
+            {
+                // We have a space where we can insert the file
+                
+                // Insert the file
+                blocks.AddBefore(
+                    freeSpace,
+                    new LinkedListNode<Block>(fileToExamine!.Value)
+                );
+
+                //Renaming space
+                var remaining = freeSpace!.Value.Length - fileToExamine!.Value.Length;
+                if (remaining > 0)
+                {
+                    blocks.AddBefore(
+                        freeSpace,
+                        new LinkedListNode<Block>(
+                            new Block(FreeSpace, remaining))
+                    );
+                }
+
+                // Remove the free space
+                blocks.Remove(freeSpace);
+                
+                // Remove the file from the end of the list
+                var tmp = fileToExamine.Previous;
+                
+                blocks.AddAfter(
+                    fileToExamine,
+                    new LinkedListNode<Block>(
+                        new Block(FreeSpace, fileToExamine!.Value.Length))
+                );
+                
+                blocks.Remove(fileToExamine);
+                while (tmp is not null && tmp.Value.FileId == FreeSpace)
+                    tmp = tmp.Previous;
+                fileToExamine = tmp;
+            }
+            else
+            {
+                // No space for this file
+                fileToExamine = fileToExamine.Previous;
+                while (fileToExamine is not null && fileToExamine.Value.FileId == FreeSpace)
+                    fileToExamine = fileToExamine.Previous;
+            }
+        }
+        
+        // Walk list to create checksum
+        var total = 0L;
+        var position = 0;
+        var block = blocks.First!;
+        do
+        {
+            // Loop over the length
+            for (var j = 0; j < block.Value.Length; j++)
+            {
+                if (block.Value.FileId != FreeSpace)
+                {
+                    total += block.Value.FileId * position;
+                }
+                position++;
+            }
+
+            block = block.Next;
+        } while (block is not null);
+
+        return total;
+    }
 }
