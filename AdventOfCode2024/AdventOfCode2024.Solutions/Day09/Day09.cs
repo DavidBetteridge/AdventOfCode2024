@@ -155,13 +155,11 @@ public class Day09
 
         return total;
     }
-
-    private sealed record FreeSpaceBlock
+    
+    private sealed record FreeSpaceBlockB
     {
         public LinkedListNode<Block> Block { get; set; }
-        public int AvailableSpace { get; set; }
         public int OriginalPos { get; set; }
-        
     }
     
     public long Part2(string filename)
@@ -170,7 +168,10 @@ public class Day09
         var i = 0;
         var nextFileId = 0;
         var blocks = new LinkedList<Block>();
-        var freespaceList = new List<FreeSpaceBlock>();
+        
+        var freespaceLists = new List<FreeSpaceBlockB>[10];
+        for (var j = 1; j < 10; j++)
+            freespaceLists[j] = [];
 
         // Parse file
         while (i < input.Length)
@@ -182,13 +183,16 @@ public class Day09
             }
             else
             {
-                var added = blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
-                freespaceList.Add(new FreeSpaceBlock
+
+                if (input[i] - '0' > 0)
                 {
-                    AvailableSpace = input[i] - '0',
-                    Block = added,
-                    OriginalPos = i
-                });
+                    var added = blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
+                    freespaceLists[input[i] - '0'].Add(new FreeSpaceBlockB
+                    {
+                        Block = added,
+                        OriginalPos = i
+                    });
+                }
             }
 
             i++;
@@ -203,25 +207,27 @@ public class Day09
         {
          //   Debug(blocks);
             
-            FreeSpaceBlock? freeSpaceBlock = null;
-            foreach (var entry in freespaceList)
+            FreeSpaceBlockB? freeSpaceBlockPointer = null;
+            for (var j = fileToExamine.Value.Length; j < 10; j++)
             {
-                if (entry.OriginalPos >= fileToExamine.Value.OriginalPos)
-                    break;
-
-                if (entry.AvailableSpace >= fileToExamine.Value.Length)
+                if (freespaceLists[j].Count > 0)
                 {
-                    freeSpaceBlock = entry;
-                    break;
+                    var entry = freespaceLists[j][0];
+                    if (entry.OriginalPos < fileToExamine.Value.OriginalPos)
+                    {
+                        if (freeSpaceBlockPointer is null || freeSpaceBlockPointer.OriginalPos > entry.OriginalPos)
+                            freeSpaceBlockPointer = entry;
+                    }
                 }
             }
             
-            if (freeSpaceBlock is not null)
+            if (freeSpaceBlockPointer is not null)
             {
                 // We have a space where we can insert the file
-                var freeSpace = freeSpaceBlock.Block;
+                var freeSpace = freeSpaceBlockPointer.Block;
+                freespaceLists[freeSpace.Value.Length].Remove(freeSpaceBlockPointer);
+                
                 var remaining = freeSpace.Value.Length - fileToExamine.Value.Length;
-                freeSpaceBlock.AvailableSpace = remaining;
                 freeSpace.Value.FileId = fileToExamine.Value.FileId;
                 if (remaining > 0)
                 {
@@ -231,7 +237,16 @@ public class Day09
                         new LinkedListNode<Block>(
                             new Block(FreeSpace, remaining, freeSpace.Value.OriginalPos))
                     );
-                    freeSpaceBlock.Block = freeSpace.Next!;
+
+                    var k = 0;
+                    while (k < freespaceLists[remaining].Count &&
+                           freespaceLists[remaining][k].OriginalPos < freeSpace.Value.OriginalPos)
+                        k++;
+                    freespaceLists[remaining].Insert(k, new FreeSpaceBlockB
+                    {
+                        Block = freeSpace.Next!,
+                        OriginalPos = freeSpace.Value.OriginalPos
+                    });
                 }
                 
                 fileToExamine.Value.FileId = FreeSpace;
@@ -265,6 +280,7 @@ public class Day09
         return total;
     }
 
+    
     private void Debug(LinkedList<Block> blocks)
     {
         Console.WriteLine();
