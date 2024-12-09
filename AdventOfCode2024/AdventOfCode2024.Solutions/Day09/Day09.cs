@@ -116,10 +116,7 @@ public class Day09
                     nextFree = nextFree.Next;
 
                 // Shorten the final block
-                var removed = fileToExamine.Value;
-                blocks.Remove(fileToExamine);
-                blocks.AddLast(new Block(removed.FileId, removed.Length - spaceAvailable, i));
-                fileToExamine = blocks.Last;
+                fileToExamine.Value.Length -= spaceAvailable;
             }
         }
 
