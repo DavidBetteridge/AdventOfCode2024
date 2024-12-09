@@ -4,7 +4,11 @@ public class Day09
 {
 
     private const int FreeSpace = int.MaxValue;
-    private sealed record Block(int FileId, int Length);
+    private sealed record Block(int FileId, int Length)
+    {
+        public int FileId { get; set; } = FileId;
+        public int Length { get; set; } = Length;
+    }
 
     public long Part1(string filename)
     {
@@ -185,13 +189,14 @@ public class Day09
             fileToExamine = blocks.Last;
         }
 
+        
         while (fileToExamine is not null && fileToExamine.Value.FileId != FreeSpace)
         {
             var freeSpace = blocks.First;
             while (freeSpace is not null && (freeSpace.Value.FileId != FreeSpace ||
                                              freeSpace.Value.Length < fileToExamine.Value.Length))
             {
-                if (freeSpace!.Value.FileId == fileToExamine.Value.FileId)
+                if (freeSpace == fileToExamine)
                     freeSpace = null;
                 else
                     freeSpace = freeSpace.Next;
@@ -202,48 +207,25 @@ public class Day09
                 freeSpace.Value.Length >= fileToExamine.Value.Length)
             {
                 // We have a space where we can insert the file
-                
-                // Insert the file
-                blocks.AddBefore(
-                    freeSpace,
-                    new LinkedListNode<Block>(fileToExamine!.Value)
-                );
-
-                //Renaming space
-                var remaining = freeSpace!.Value.Length - fileToExamine!.Value.Length;
+                var remaining = freeSpace.Value.Length - fileToExamine.Value.Length;
+                freeSpace.Value.FileId = fileToExamine.Value.FileId;
                 if (remaining > 0)
                 {
-                    blocks.AddBefore(
+                    freeSpace.Value.Length = fileToExamine.Value.Length;
+                    blocks.AddAfter(
                         freeSpace,
                         new LinkedListNode<Block>(
                             new Block(FreeSpace, remaining))
                     );
                 }
-
-                // Remove the free space
-                blocks.Remove(freeSpace);
                 
-                // Remove the file from the end of the list
-                var tmp = fileToExamine.Previous;
-                
-                blocks.AddAfter(
-                    fileToExamine,
-                    new LinkedListNode<Block>(
-                        new Block(FreeSpace, fileToExamine!.Value.Length))
-                );
-                
-                blocks.Remove(fileToExamine);
-                while (tmp is not null && tmp.Value.FileId == FreeSpace)
-                    tmp = tmp.Previous;
-                fileToExamine = tmp;
+                fileToExamine.Value.FileId = FreeSpace;
             }
-            else
-            {
-                // No space for this file
+            
+            fileToExamine = fileToExamine.Previous;
+            while (fileToExamine is not null && fileToExamine.Value.FileId == FreeSpace)
                 fileToExamine = fileToExamine.Previous;
-                while (fileToExamine is not null && fileToExamine.Value.FileId == FreeSpace)
-                    fileToExamine = fileToExamine.Previous;
-            }
+            
         }
         
         // Walk list to create checksum
