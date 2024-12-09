@@ -197,11 +197,7 @@ public class Day09
         // Find the last file
         var fileToExamine = blocks.Last;
         if (fileToExamine!.Value.FileId == FreeSpace)
-        {
-            // The last entry was freespace
-            blocks.RemoveLast();
-            fileToExamine = blocks.Last;
-        }
+            fileToExamine = fileToExamine.Previous;
         
         while (fileToExamine is not null && fileToExamine.Value.FileId != FreeSpace)
         {
