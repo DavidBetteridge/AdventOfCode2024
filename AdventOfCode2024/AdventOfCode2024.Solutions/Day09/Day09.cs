@@ -60,8 +60,7 @@ public class Day09
                 freeSpaceBlockCount--;
                 
                 // Find the next free block
-                var next = nextFree.Next;
-                nextFree = next;
+                nextFree = nextFree.Next;
                 while (nextFree is not null && nextFree!.Value.FileId != FreeSpace)
                     nextFree = nextFree.Next;
 
@@ -80,20 +79,17 @@ public class Day09
             // Case 2.  File is smaller than the free space
             else if (fileToExamine!.Value.Length < nextFree!.Value.Length)
             {
-                blocks.AddBefore(
-                    nextFree,
-                    new LinkedListNode<Block>(fileToExamine!.Value)
-                );
+                var remaining = nextFree!.Value.Length - fileToExamine!.Value.Length;
+                 nextFree.Value.FileId = fileToExamine!.Value.FileId;
+                 nextFree.Value.Length = fileToExamine!.Value.Length;
 
                 //Renaming space
-                blocks.AddBefore(
+                blocks.AddAfter(
                     nextFree,
                     new LinkedListNode<Block>(
-                        new Block(FreeSpace, nextFree!.Value.Length - fileToExamine!.Value.Length, i))
+                        new Block(FreeSpace, remaining, i))
                 );
-                var next = nextFree.Previous;
-                blocks.Remove(nextFree);
-                nextFree = next;
+                nextFree = nextFree.Next;
 
                 blocks.Remove(fileToExamine);
                 fileToExamine = blocks.Last;
@@ -111,18 +107,11 @@ public class Day09
             else if (fileToExamine!.Value.Length > nextFree!.Value.Length)
             {
                 var spaceAvailable = nextFree!.Value.Length;
-                // Insert as much as we can
-                blocks.AddBefore(
-                    nextFree,
-                    new LinkedListNode<Block>(new Block(fileToExamine.Value.FileId, nextFree!.Value.Length, i))
-                );
-
-                var next = nextFree.Next;
-                blocks.Remove(nextFree);
                 freeSpaceBlockCount--;
+                nextFree.Value.FileId = fileToExamine!.Value.FileId;
 
                 // Find the next free block
-                nextFree = next;
+                nextFree = nextFree.Next;
                 while (nextFree is not null && nextFree!.Value.FileId != FreeSpace)
                     nextFree = nextFree.Next;
 
