@@ -1,7 +1,7 @@
 ## 2024 Results
 
 | Method      | Categories | Mean     | Error   | StdDev  | Ratio | Gen0    | Gen1   | Allocated | Alloc Ratio |
-|------------ |----------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
+|------------ |------------|---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
 | Day01_Part1 | Part1      | 27.17 us | 0.356 us | 0.333 us |  1.00 |    0.02 |  3.6621 | 0.1221 |  30.24 KB |        1.00 |
 |                       |            |          |          |          |       |         |         |        |           |             |
 | Day01_Part2 | Part2      | 34.84 us | 0.522 us | 0.488 us |  1.00 |    0.02 | 6.7749 | 0.7935 |  55.82 KB |        1.00 |
@@ -34,6 +34,10 @@
 | Day08_Part1 | Part1      | 14.79 us | 0.256 us | 0.375 us |  1.00 |    0.03 | 3.5706 | 0.0763 |  29.24 KB |        1.00 |
 |             |            |          |          |          |       |         |        |        |           |             |
 | Day08_Part2 | Part2      | 24.57 us | 0.362 us | 0.338 us |  1.00 |    0.02 | 9.0332 | 0.5798 |  73.88 KB |        1.00 |
+|             |            |            |           |           |       |         |          |          |           |             |
+| Day09_Part1 | Part1      |   1.306 ms | 0.0057 ms | 0.0044 ms |  1.00 |    0.00 | 306.6406 | 152.3438 |   2.46 MB |        1.00 |
+|             |            |            |           |           |       |         |          |          |           |             |
+| Day09_Part2 | Part2      |   50.75 ms | 0.281 ms | 0.263 ms |  0.38 | 200.0000 | 100.0000 |   2.13 MB |        1.35 |
 
 
 
@@ -43,7 +47,7 @@
 ``` bash
 cd /Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Solutions
 dotnet run -c Release
-dotnet run -c Release --filter '*Day01BenchmarkTests*'
+dotnet run -c Release --filter '*Day09BenchmarkTests*'
 ```
 
 

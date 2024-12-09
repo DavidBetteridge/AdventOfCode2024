@@ -4,7 +4,7 @@ public class Day09
 {
 
     private const int FreeSpace = int.MaxValue;
-    private sealed record Block(int FileId, int Length)
+    private sealed record Block(int FileId, int Length, int OriginalPos)
     {
         public int FileId { get; set; } = FileId;
         public int Length { get; set; } = Length;
@@ -23,12 +23,12 @@ public class Day09
         {
             if (i % 2 == 0)
             {
-                blocks.AddLast(new Block(nextFileId, input[i] - '0'));
+                blocks.AddLast(new Block(nextFileId, input[i] - '0', i));
                 nextFileId++;
             }
             else
             {
-                blocks.AddLast(new Block(FreeSpace, input[i] - '0'));
+                blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
                 freeSpaceBlockCount++;
             }
 
@@ -92,7 +92,7 @@ public class Day09
                 blocks.AddBefore(
                     nextFree,
                     new LinkedListNode<Block>(
-                        new Block(FreeSpace, nextFree!.Value.Length - fileToExamine!.Value.Length))
+                        new Block(FreeSpace, nextFree!.Value.Length - fileToExamine!.Value.Length, i))
                 );
                 var next = nextFree.Previous;
                 blocks.Remove(nextFree);
@@ -117,7 +117,7 @@ public class Day09
                 // Insert as much as we can
                 blocks.AddBefore(
                     nextFree,
-                    new LinkedListNode<Block>(new Block(fileToExamine.Value.FileId, nextFree!.Value.Length))
+                    new LinkedListNode<Block>(new Block(fileToExamine.Value.FileId, nextFree!.Value.Length, i))
                 );
 
                 var next = nextFree.Next;
@@ -132,7 +132,7 @@ public class Day09
                 // Shorten the final block
                 var removed = fileToExamine.Value;
                 blocks.Remove(fileToExamine);
-                blocks.AddLast(new Block(removed.FileId, removed.Length - spaceAvailable));
+                blocks.AddLast(new Block(removed.FileId, removed.Length - spaceAvailable, i));
                 fileToExamine = blocks.Last;
             }
         }
@@ -155,26 +155,40 @@ public class Day09
 
         return total;
     }
+
+    private sealed record FreeSpaceBlock
+    {
+        public LinkedListNode<Block> Block { get; set; }
+        public int AvailableSpace { get; set; }
+        public int OriginalPos { get; set; }
+        
+    }
     
-    
-      public long Part2(string filename)
+    public long Part2(string filename)
     {
         var input = File.ReadAllBytes(filename);
         var i = 0;
         var nextFileId = 0;
         var blocks = new LinkedList<Block>();
+        var freespaceList = new List<FreeSpaceBlock>();
 
         // Parse file
         while (i < input.Length)
         {
             if (i % 2 == 0)
             {
-                blocks.AddLast(new Block(nextFileId, input[i] - '0'));
+                blocks.AddLast(new Block(nextFileId, input[i] - '0', i));
                 nextFileId++;
             }
             else
             {
-                blocks.AddLast(new Block(FreeSpace, input[i] - '0'));
+                var added = blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
+                freespaceList.Add(new FreeSpaceBlock
+                {
+                    AvailableSpace = input[i] - '0',
+                    Block = added,
+                    OriginalPos = i
+                });
             }
 
             i++;
@@ -188,26 +202,30 @@ public class Day09
             blocks.RemoveLast();
             fileToExamine = blocks.Last;
         }
-
         
         while (fileToExamine is not null && fileToExamine.Value.FileId != FreeSpace)
         {
-            var freeSpace = blocks.First;
-            while (freeSpace is not null && (freeSpace.Value.FileId != FreeSpace ||
-                                             freeSpace.Value.Length < fileToExamine.Value.Length))
+         //   Debug(blocks);
+            
+            FreeSpaceBlock? freeSpaceBlock = null;
+            foreach (var entry in freespaceList)
             {
-                if (freeSpace == fileToExamine)
-                    freeSpace = null;
-                else
-                    freeSpace = freeSpace.Next;
-            }
+                if (entry.OriginalPos >= fileToExamine.Value.OriginalPos)
+                    break;
 
-            if (freeSpace is not null &&
-                freeSpace.Value.FileId == FreeSpace &&
-                freeSpace.Value.Length >= fileToExamine.Value.Length)
+                if (entry.AvailableSpace >= fileToExamine.Value.Length)
+                {
+                    freeSpaceBlock = entry;
+                    break;
+                }
+            }
+            
+            if (freeSpaceBlock is not null)
             {
                 // We have a space where we can insert the file
+                var freeSpace = freeSpaceBlock.Block;
                 var remaining = freeSpace.Value.Length - fileToExamine.Value.Length;
+                freeSpaceBlock.AvailableSpace = remaining;
                 freeSpace.Value.FileId = fileToExamine.Value.FileId;
                 if (remaining > 0)
                 {
@@ -215,8 +233,9 @@ public class Day09
                     blocks.AddAfter(
                         freeSpace,
                         new LinkedListNode<Block>(
-                            new Block(FreeSpace, remaining))
+                            new Block(FreeSpace, remaining, freeSpace.Value.OriginalPos))
                     );
+                    freeSpaceBlock.Block = freeSpace.Next!;
                 }
                 
                 fileToExamine.Value.FileId = FreeSpace;
@@ -248,5 +267,19 @@ public class Day09
         } while (block is not null);
 
         return total;
+    }
+
+    private void Debug(LinkedList<Block> blocks)
+    {
+        Console.WriteLine();
+        var block = blocks.First!;
+        do
+        {
+            for (var j = 0; j < block.Value.Length; j++)
+                Console.Write(block.Value.FileId == FreeSpace ? "." : block.Value.FileId);
+
+            block = block.Next;
+        } while (block is not null);
+
     }
 }

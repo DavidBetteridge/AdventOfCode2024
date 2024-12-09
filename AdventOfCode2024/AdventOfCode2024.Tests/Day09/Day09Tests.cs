@@ -29,5 +29,4 @@ public class Day09Tests
         var solver = new Solutions.Day09();
         Assert.Equal(6377400869326, solver.Part2("Day09/input.txt"));
     }
-
  }
