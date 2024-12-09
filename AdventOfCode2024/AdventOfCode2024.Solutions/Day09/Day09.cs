@@ -78,8 +78,7 @@ public class Day09
                 //Renaming space
                 blocks.AddAfter(
                     nextFree,
-                    new LinkedListNode<Block>(
-                        new Block(FreeSpace, remaining, nextFree.Value.OriginalPos))
+                        new Block(FreeSpace, remaining, nextFree.Value.OriginalPos)
                 );
                 nextFree = nextFree.Next;
 
