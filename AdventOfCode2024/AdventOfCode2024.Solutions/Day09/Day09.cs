@@ -19,12 +19,12 @@ public class Day09
         {
             if (i % 2 == 0)
             {
-                blocks.AddLast(new Block(nextFileId, input[i]));
+                blocks.AddLast(new Block(nextFileId, input[i] - '0'));
                 nextFileId++;
             }
             else
             {
-                blocks.AddLast(new Block(FreeSpace, input[i]));
+                blocks.AddLast(new Block(FreeSpace, input[i] - '0'));
                 freeSpaceBlockCount++;
             }
 
@@ -77,7 +77,7 @@ public class Day09
 
 
             // Case 2.  File is smaller than the free space
-            if (fileToExamine!.Value.Length < nextFree!.Value.Length)
+            else if (fileToExamine!.Value.Length < nextFree!.Value.Length)
             {
                 blocks.AddBefore(
                     nextFree,
@@ -107,7 +107,7 @@ public class Day09
 
 
             // Case 3.  File is larger than the free space.
-            if (fileToExamine!.Value.Length > nextFree!.Value.Length)
+            else if (fileToExamine!.Value.Length > nextFree!.Value.Length)
             {
                 var spaceAvailable = nextFree!.Value.Length;
                 // Insert as much as we can
@@ -129,11 +129,12 @@ public class Day09
                 var removed = fileToExamine.Value;
                 blocks.Remove(fileToExamine);
                 blocks.AddLast(new Block(removed.FileId, removed.Length - spaceAvailable));
+                fileToExamine = blocks.Last;
             }
         }
 
         // Walk list to create checksum
-        var total = 0;
+        var total = 0L;
         var position = 0;
         var block = blocks.First!;
         do
