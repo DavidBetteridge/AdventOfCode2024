@@ -44,8 +44,7 @@ public class Day09
         {
             // The last entry was freespace
             freeSpaceBlockCount--;
-            blocks.RemoveLast();
-            fileToExamine = blocks.Last;
+            fileToExamine = fileToExamine.Previous;
         }
 
         while (freeSpaceBlockCount > 0)
@@ -55,15 +54,13 @@ public class Day09
             // Case 1.  File is equal to the free space.
             if (fileToExamine!.Value.Length == nextFree!.Value.Length)
             {
-                blocks.AddBefore(
-                    nextFree,
-                    new LinkedListNode<Block>(fileToExamine!.Value)
-                );
-                var next = nextFree.Next;
-                blocks.Remove(nextFree);
+                // Swap the file with the free space
+                nextFree.Value.FileId = fileToExamine!.Value.FileId;
+                fileToExamine!.Value.FileId = FreeSpace;
                 freeSpaceBlockCount--;
-
+                
                 // Find the next free block
+                var next = nextFree.Next;
                 nextFree = next;
                 while (nextFree is not null && nextFree!.Value.FileId != FreeSpace)
                     nextFree = nextFree.Next;
@@ -156,7 +153,7 @@ public class Day09
         return total;
     }
     
-    private sealed record FreeSpaceBlockB
+    private sealed record FreeSpaceBlock
     {
         public LinkedListNode<Block> Block { get; set; }
         public int OriginalPos { get; set; }
@@ -169,7 +166,7 @@ public class Day09
         var nextFileId = 0;
         var blocks = new LinkedList<Block>();
         
-        var freespaceLists = new List<FreeSpaceBlockB>[10];
+        var freespaceLists = new List<FreeSpaceBlock>[10];
         for (var j = 1; j < 10; j++)
             freespaceLists[j] = [];
 
@@ -189,7 +186,7 @@ public class Day09
                 if (input[i] - '0' > 0)
                 {
                     var added = blocks.AddLast(new Block(FreeSpace, input[i] - '0', i));
-                    freespaceLists[input[i] - '0'].Add(new FreeSpaceBlockB
+                    freespaceLists[input[i] - '0'].Add(new FreeSpaceBlock
                     {
                         Block = added,
                         OriginalPos = i
@@ -209,7 +206,7 @@ public class Day09
         {
          //   Debug(blocks);
             
-            FreeSpaceBlockB? freeSpaceBlockPointer = null;
+            FreeSpaceBlock? freeSpaceBlockPointer = null;
             for (var j = fileToExamine.Value.Length; j < 10; j++)
             {
                 var headOfList = freespaceListHeads[j];
@@ -245,7 +242,7 @@ public class Day09
                     while (k < freespaceLists[remaining].Count &&
                            freespaceLists[remaining][k].OriginalPos < freeSpace.Value.OriginalPos)
                         k++;
-                    freespaceLists[remaining].Insert(k, new FreeSpaceBlockB
+                    freespaceLists[remaining].Insert(k, new FreeSpaceBlock
                     {
                         Block = freeSpace.Next!,
                         OriginalPos = freeSpace.Value.OriginalPos
