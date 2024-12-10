@@ -50,15 +50,15 @@ public class Day10
         var height = map.Length;
         var width = map[0].Length;
 
-        var temp = new Dictionary<(int, int), int>();
-        var temp2 = new Dictionary<(int, int), int>();
+        var temp = new int[width,height];
+        var temp2 = new int[width,height];
         
         for (var rowNumber = 0; rowNumber < height; rowNumber++)
         {
             for (var columnNumber = 0; columnNumber < width; columnNumber++)
             {
                 if (map[rowNumber][columnNumber] == 9)
-                    temp.Add((columnNumber, rowNumber),1);
+                    temp[columnNumber, rowNumber] = 1;
             }
         }
 
@@ -66,23 +66,37 @@ public class Day10
         {
             var previousValues = target % 2 == 0 ? temp : temp2;
             var futureValues = target % 2 == 1 ? temp : temp2;
-            
-            futureValues.Clear();
-            
-            foreach (var previous in previousValues)
+
+            for (var y = 0; y < height; y++)
             {
-                var (x, y) = previous.Key;
-                if (x > 0 && map[y][x - 1] == target)
-                    futureValues[(x - 1, y)] = futureValues.GetValueOrDefault((x - 1, y)) + previous.Value;
-                if (x + 1 < width && map[y][x + 1] == target)
-                    futureValues[(x + 1, y)] = futureValues.GetValueOrDefault((x + 1, y)) + previous.Value;
-                if (y > 0 && map[y - 1][x] == target)
-                    futureValues[(x, y - 1)] = futureValues.GetValueOrDefault((x, y - 1)) + previous.Value;
-                if (y + 1 < height && map[y + 1][x] == target)
-                    futureValues[(x, y + 1)] = futureValues.GetValueOrDefault((x, y + 1)) + previous.Value;            
+                for (var x = 0; x < width; x++)
+                {
+                    if (previousValues[x, y] != 0)
+                    {
+                        if (x > 0 && map[y][x - 1] == target)
+                            futureValues[x - 1, y] += previousValues[x, y];
+                        if (x + 1 < width && map[y][x + 1] == target)
+                            futureValues[x + 1, y] += previousValues[x, y];
+                        if (y > 0 && map[y - 1][x] == target)
+                            futureValues[x, y - 1] += previousValues[x, y];
+                        if (y + 1 < height && map[y + 1][x] == target)
+                            futureValues[x, y + 1] += previousValues[x, y];
+                        previousValues[x, y] = 0;
+                    }
+                }
+            }
+
+        }
+
+        var total = 0;
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                total += temp2[x, y];
             }
         }
-        
-        return temp2.Values.Sum();
+
+        return total;
     }
 }
