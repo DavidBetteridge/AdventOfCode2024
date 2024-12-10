@@ -8,7 +8,6 @@ public class Day09
     {
         public int FileId { get; set; } = FileId;
         public int Length { get; set; } = Length;
-        public int OriginalPos { get; set; } = OriginalPos;
     }
 
     public long Part1(string filename)
