@@ -16,18 +16,18 @@ public class Day10Tests
         Assert.Equal(489, solver.Part1("Day10/input.txt")); 
     }
     
-    // [Fact]
-    // public void Test_Part2_Sample()
-    // {
-    //     var solver = new Solutions.Day10();
-    //     Assert.Equal(2858, solver.Part2("Day10/sample.txt"));
-    // }
-    //
-    // [Fact]
-    // public void Test_Part2()
-    // {
-    //     var solver = new Solutions.Day10();
-    //     Assert.Equal(6377400869326, solver.Part2("Day10/input.txt"));
-    // }
+    [Fact]
+    public void Test_Part2_Sample()
+    {
+        var solver = new Solutions.Day10();
+        Assert.Equal(81, solver.Part2("Day10/sample.txt"));
+    }
+    
+    [Fact]
+    public void Test_Part2()
+    {
+        var solver = new Solutions.Day10();
+        Assert.Equal(1086, solver.Part2("Day10/input.txt"));
+    }
 
  }
