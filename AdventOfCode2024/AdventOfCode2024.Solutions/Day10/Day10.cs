@@ -34,7 +34,6 @@ public class Day10
                 return 1;
             }
                 
-        
             return CountPaths(rowNumber, columnNumber+1 , currentValue + 1) +
                    CountPaths(rowNumber, columnNumber-1, currentValue + 1) +
                    CountPaths(rowNumber+1, columnNumber, currentValue + 1) +
