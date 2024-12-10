@@ -8,14 +8,25 @@ namespace AdventOfCode2024.Solutions;
 [MarkdownExporterAttribute.GitHub]
 public class Day10BenchmarkTests
 {
-    [Benchmark(Baseline = true)]
-    [BenchmarkCategory("Part1")]
-    public void Day10_Part1()
-    {
-        var solver = new Day10();
-        var answer = solver.Part1("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day10/input.txt");
-        if (answer != 489) throw new Exception("Wrong answer");
-    }
+    // [Benchmark(Baseline = true)]
+    // [BenchmarkCategory("Part1")]
+    // public void Day10_Part1()
+    // {
+    //     var solver = new Day10();
+    //     var answer = solver.Part1("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day10/input.txt");
+    //     if (answer != 489) throw new Exception("Wrong answer");
+    // }
+    
+    //
+    // [Benchmark(Baseline = false)]
+    // [BenchmarkCategory("Part1")]
+    // public void Day10_Part1b()
+    // {
+    //     var solver = new Day10();
+    //     var answer = solver.Part1B("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day10/input.txt");
+    //     if (answer != 489) throw new Exception("Wrong answer");
+    // }
+
     
     [Benchmark(Baseline = true)]
     [BenchmarkCategory("Part2")]
