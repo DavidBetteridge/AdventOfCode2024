@@ -25,34 +25,34 @@ public class Day11
     {
         var stones = File.ReadAllText(filename).Split(' ').Select(long.Parse).ToArray();
         var cache = new Dictionary<long, long[]>();
-        return stones.Select(stone => Blink(25, stone, cache)).Sum();
+        return stones.Select(stone => Blink(25, stone, cache, 26)).Sum();
     }
 
     public long Part2(string filename)
     {
         var stones = File.ReadAllText(filename).Split(' ').Select(long.Parse).ToArray();
         var cache = new Dictionary<long, long[]>();
-        return stones.Select(stone => Blink(75, stone, cache)).Sum();
+        return stones.Select(stone => Blink(75, stone, cache, 76)).Sum();
     }
 
-    private long Blink(int timesToBlink, long stone, Dictionary<long, long[]> cache)
+    private long Blink(int timesToBlink, long stone, Dictionary<long, long[]> cache, int cacheSize)
     {
         if (timesToBlink == 0) return 1;
         if (cache.TryGetValue(stone, out var x) && x[timesToBlink] != 0) return x[timesToBlink];
 
         long newStoneCount;
         if (stone == 0)
-            newStoneCount = Blink(timesToBlink - 1, 1, cache);
+            newStoneCount = Blink(timesToBlink - 1, 1, cache, cacheSize);
         else
         {
             var f = (int)Math.Log10(stone);
             if (f % 2 == 1)
             {
-                newStoneCount = Blink(timesToBlink - 1, stone / Divisors[ (f + 1) / 2 ], cache) +
-                                Blink(timesToBlink - 1, stone % Divisors[ (f + 1) / 2 ], cache);
+                newStoneCount = Blink(timesToBlink - 1, stone / Divisors[ (f + 1) / 2 ], cache, cacheSize) +
+                                Blink(timesToBlink - 1, stone % Divisors[ (f + 1) / 2 ], cache, cacheSize);
             }
             else
-                newStoneCount = Blink(timesToBlink - 1, stone * 2024, cache);
+                newStoneCount = Blink(timesToBlink - 1, stone * 2024, cache, cacheSize);
         }
         
         if (cache.TryGetValue(stone, out var y))
@@ -61,7 +61,7 @@ public class Day11
         }
         else
         {
-            cache[stone] = new long[76];
+            cache[stone] = new long[cacheSize];
             cache[stone][timesToBlink] = newStoneCount;
         }
 
