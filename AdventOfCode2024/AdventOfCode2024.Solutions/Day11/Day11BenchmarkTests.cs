@@ -25,4 +25,13 @@ public class Day11BenchmarkTests
         var answer = solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day11/input.txt");
         if (answer != 242090118578155) throw new Exception("Wrong answer");
     }
+    
+    // [Benchmark(Baseline = false)]
+    // [BenchmarkCategory("Part2")]
+    // public void Day11_Part2B()
+    // {
+    //     var solver = new Day11();
+    //     var answer = solver.Part2B("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day11/input.txt");
+    //     if (answer != 242090118578155) throw new Exception("Wrong answer");
+    // }
  }

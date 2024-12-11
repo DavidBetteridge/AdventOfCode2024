@@ -1,9 +1,26 @@
-using System.Collections.Concurrent;
 
 namespace AdventOfCode2024.Solutions;
 
 public class Day11
 {
+    private long[] Divisors =
+    {
+        1,
+        10,
+        100,
+        1000,
+        10000,
+        100000,
+        1000000,
+        10000000,
+        100000000,
+        1000000000,
+        10000000000,
+        100000000000,
+        1000000000000,
+        10000000000000,
+    };
+    
     public long Part1(string filename)
     {
         var stones = File.ReadAllText(filename).Split(' ').Select(long.Parse).ToArray();
@@ -31,9 +48,8 @@ public class Day11
             var f = (int)Math.Log10(stone);
             if (f % 2 == 1)
             {
-                var e = (int)Math.Pow(10, (f + 1) / 2.0);
-                newStoneCount = Blink(timesToBlink - 1, stone / e, cache) +
-                                Blink(timesToBlink - 1, stone % e, cache);
+                newStoneCount = Blink(timesToBlink - 1, stone / Divisors[ (f + 1) / 2 ], cache) +
+                                Blink(timesToBlink - 1, stone % Divisors[ (f + 1) / 2 ], cache);
             }
             else
                 newStoneCount = Blink(timesToBlink - 1, stone * 2024, cache);

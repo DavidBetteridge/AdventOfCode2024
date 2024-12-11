@@ -22,5 +22,11 @@ public class Day11Tests
         var solver = new Solutions.Day11();
         Assert.Equal(242090118578155, solver.Part2("Day11/input.txt"));
     }
-
+    
+    // [Fact]
+    // public void Test_Part2B()
+    // {
+    //     var solver = new Solutions.Day11();
+    //     Assert.Equal(242090118578155, solver.Part2B("Day11/input.txt"));
+    // }
  }
