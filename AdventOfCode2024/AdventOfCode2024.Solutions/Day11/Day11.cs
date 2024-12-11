@@ -18,16 +18,16 @@ public class Day11
     
     private long Blink(int timesToBlink, long stone, Dictionary<(long,int),long> cache)
     {
-        if (cache.TryGetValue(((stone, timesToBlink)), out var x)) return x;
+        if (cache.TryGetValue((stone, timesToBlink), out var x)) return x;
         
         if (timesToBlink == 0) return 1;
 
-        var newStoneCount = -1L;
+        long newStoneCount;
         if (stone == 0)
             newStoneCount = Blink(timesToBlink - 1, 1, cache);
-        else if (( Math.Floor(Math.Log10(stone))) % 2 == 1)
+        else if ((int)Math.Floor(Math.Log10(stone)) % 2 == 1)
         {
-            var e = (int)Math.Pow(10, (((int)Math.Log10(stone)) + 1) / 2);
+            var e = (int)Math.Pow(10, ((int)Math.Floor(Math.Log10(stone)) + 1) / 2.0);
             newStoneCount = Blink(timesToBlink - 1, stone / e, cache) +
                             Blink(timesToBlink - 1, stone % e, cache);
         }
