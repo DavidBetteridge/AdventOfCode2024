@@ -50,15 +50,15 @@ public class Day10
         var height = map.Length;
         var width = map[0].Length;
 
-        var temp = new int[width,height];
-        var temp2 = new int[width,height];
+        var temp = new int[width*height];
+        var temp2 = new int[width*height];
         
         for (var rowNumber = 0; rowNumber < height; rowNumber++)
         {
             for (var columnNumber = 0; columnNumber < width; columnNumber++)
             {
                 if (map[rowNumber][columnNumber] == 9)
-                    temp[columnNumber, rowNumber] = 1;
+                    temp[(rowNumber * width) + columnNumber] = 1;
             }
         }
 
@@ -71,32 +71,25 @@ public class Day10
             {
                 for (var x = 0; x < width; x++)
                 {
-                    if (previousValues[x, y] != 0)
+                    var index = (y * width) + x;
+                    var previousValue = previousValues[index];
+                    if (previousValue != 0)
                     {
                         if (x > 0 && map[y][x - 1] == target)
-                            futureValues[x - 1, y] += previousValues[x, y];
+                            futureValues[index-1] += previousValue;
                         if (x + 1 < width && map[y][x + 1] == target)
-                            futureValues[x + 1, y] += previousValues[x, y];
+                            futureValues[index+1] += previousValue;
                         if (y > 0 && map[y - 1][x] == target)
-                            futureValues[x, y - 1] += previousValues[x, y];
+                            futureValues[index-width] += previousValue;
                         if (y + 1 < height && map[y + 1][x] == target)
-                            futureValues[x, y + 1] += previousValues[x, y];
-                        previousValues[x, y] = 0;
+                            futureValues[index+width] += previousValue;
+                        previousValues[index] = 0;
                     }
                 }
             }
 
         }
 
-        var total = 0;
-        for (var y = 0; y < height; y++)
-        {
-            for (var x = 0; x < width; x++)
-            {
-                total += temp2[x, y];
-            }
-        }
-
-        return total;
+        return temp2.Sum();
     }
 }
