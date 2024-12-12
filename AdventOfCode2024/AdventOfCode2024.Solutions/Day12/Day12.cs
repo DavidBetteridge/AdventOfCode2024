@@ -89,7 +89,7 @@ public class Day12
         var height = map.Length;
         var width = map[0].Length;
         var seen = new bool[height * width];
-        var sideCounted = new HashSet<(int,int)>();  // Loc,Dir
+        var sideCounted = new HashSet<int>();  // Loc << 2 + Dir
         for (var rowNumber = 0; rowNumber < height; rowNumber++)
         {
             for (var columnNumber = 0; columnNumber < width; columnNumber++)
@@ -126,7 +126,7 @@ public class Day12
             {
                 // We only count a side if the square to left/right hasn't been counted
                 const int north = 1;
-                if (!sideCounted.Contains((key, north)))
+                if (!sideCounted.Contains((key<<2) + north))
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
@@ -135,14 +135,14 @@ public class Day12
                     var c = column;
                     while (c >= 0 && map[row][c] == region && IsEdge(c,row-1,region))
                     {
-                        sideCounted.Add(((row * width) + c , north));
+                        sideCounted.Add((((row * width) + c) <<2) + north);
                         c--;
                     }
 
                     c = column + 1;
                     while (c < width && map[row][c] == region && IsEdge(c,row-1,region))
                     {
-                        sideCounted.Add(((row * width) + c , north));
+                        sideCounted.Add((((row * width) + c) <<2) + north);
                         c++;
                     }
                 }
@@ -158,7 +158,7 @@ public class Day12
             {
                 // We only count a side if the square to left/right hasn't been counted
                 const int south = 2;
-                if (!sideCounted.Contains((key, south)))
+                if (!sideCounted.Contains((key<<2) + south))
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
@@ -167,14 +167,14 @@ public class Day12
                     var c = column;
                     while (c >= 0 && map[row][c] == region && IsEdge(c,row+1,region))
                     {
-                        sideCounted.Add(((row * width) + c , south));
+                        sideCounted.Add(((row * width) + c << 2) + south);
                         c--;
                     }
 
                     c = column + 1;
                     while (c < width && map[row][c] == region && IsEdge(c,row+1,region))
                     {
-                        sideCounted.Add(((row * width) + c , south));
+                        sideCounted.Add(((row * width) + c << 2) + south);
                         c++;
                     }
                 }
@@ -190,7 +190,7 @@ public class Day12
             {
                 // We only count a side if the square to above/below hasn't been counted
                 const int west = 3;
-                if (!sideCounted.Contains((key, west)))
+                if (!sideCounted.Contains((key<<2) + west))
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
@@ -199,14 +199,14 @@ public class Day12
                     var r = row;
                     while (r >= 0 && map[r][column] == region && IsEdge(column-1,r,region))
                     {
-                        sideCounted.Add(((r * width) + column , west));
+                        sideCounted.Add(((r * width) + column << 2)+ west);
                         r--;
                     }
 
                     r = row+1;
                     while (r < height && map[r][column] == region && IsEdge(column-1,r,region))
                     {
-                        sideCounted.Add(((r * width) + column , west));
+                        sideCounted.Add(((r * width) + column << 2)+ west);
                         r++;
                     }
                 }
@@ -222,7 +222,7 @@ public class Day12
             {
                 // We only count a side if the square to above/below hasn't been counted
                 const int east = 4;
-                if (!sideCounted.Contains((key, east)))
+                if (!sideCounted.Contains((key<<2) + east))
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
@@ -231,14 +231,14 @@ public class Day12
                     var r = row;
                     while (r >= 0 && map[r][column] == region && IsEdge(column+1,r,region))
                     {
-                        sideCounted.Add(((r * width) + column , east));
+                        sideCounted.Add(((r * width) + column << 2)+ east);
                         r--;
                     }
 
                     r = row+1;
                     while (r < height && map[r][column] == region && IsEdge(column+1,r,region))
                     {
-                        sideCounted.Add(((r * width) + column , east));
+                        sideCounted.Add(((r * width) + column << 2)+ east);
                         r++;
                     }
                 }
