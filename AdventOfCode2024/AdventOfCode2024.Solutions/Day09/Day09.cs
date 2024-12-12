@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day09
@@ -11,6 +13,111 @@ public class Day09
     }
 
     public long Part1(string filename)
+    {
+        var input = File.ReadAllBytes(filename);
+
+        var answer = 0L;
+
+        var outputLength = 0;
+        var i = 0;
+        while (i < input.Length)
+        {
+            outputLength += input[i] - '0';
+            i++;
+        }
+
+
+        var nextFreeSpaceOutput = 0;
+        var nextFreeSpaceInput = 0;
+        var nextFreeSpaceOffset = 0;
+        
+        
+        // Find the first free space. 
+        while (nextFreeSpaceInput != 1)
+        {
+            answer += nextFreeSpaceOutput * (nextFreeSpaceInput/2);
+            
+            nextFreeSpaceOutput++;
+            nextFreeSpaceOffset++;
+            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0')
+            {
+                nextFreeSpaceInput++;
+                nextFreeSpaceOffset = 0;
+            }
+        }
+
+        var nextFileToMoveOutput = outputLength-1;
+        var nextFileToMoveInput = input.Length-1;
+        var nextFileToMoveOffset = 0;
+        
+        // Find the final file
+        while (nextFileToMoveInput % 2 == 1)
+        {
+            nextFileToMoveOutput--;
+            nextFileToMoveOffset++;
+            if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0' || input[nextFileToMoveInput] - '0' == 0)
+            {
+                nextFileToMoveInput--;
+                nextFileToMoveOffset = 0;
+            }
+        }
+
+        while (nextFreeSpaceOutput < nextFileToMoveOutput)
+        {
+            // Replace the free space with the moved file
+            answer += nextFreeSpaceOutput * (nextFileToMoveInput/2);
+            
+            // Walk on one position
+            nextFreeSpaceOutput++;
+            nextFreeSpaceOffset++;
+            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0' || input[nextFreeSpaceInput] - '0' == 0)
+            {
+                nextFreeSpaceInput++;
+                nextFreeSpaceOffset = 0;
+            }
+            
+            // If we are on a file,  then we need to keep walking until we find some free space
+            while (nextFreeSpaceOutput < outputLength && nextFreeSpaceInput % 2 == 0 && nextFreeSpaceOutput < nextFileToMoveOutput)
+            {
+                // As we have walked over a file, we need to include it in the answer
+                answer += nextFreeSpaceOutput * (nextFreeSpaceInput / 2);
+                
+                nextFreeSpaceOutput++;
+                nextFreeSpaceOffset++;
+                if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0')
+                {
+                    nextFreeSpaceInput++;
+                    nextFreeSpaceOffset = 0;
+                }
+                if (input[nextFreeSpaceInput] - '0' == 0)
+                    nextFreeSpaceInput++;
+            }
+
+            // Find the next file to move
+            do
+            {
+                nextFileToMoveOutput--;
+                nextFileToMoveOffset++;
+                if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0')
+                {
+                    nextFileToMoveInput--;
+                    nextFileToMoveOffset = 0;
+                }
+
+                if (input[nextFileToMoveInput] - '0' == 0)
+                {
+                    nextFileToMoveInput--;
+                    nextFileToMoveOffset = 0;
+                }
+            }
+            while (nextFileToMoveOutput > 0 && nextFileToMoveInput % 2 == 1) ;
+        }
+        
+        return answer;
+
+    }
+
+    public long Part1Original(string filename)
     {
         var input = File.ReadAllBytes(filename);
         var i = 0;
