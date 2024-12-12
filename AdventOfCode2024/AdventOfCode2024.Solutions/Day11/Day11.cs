@@ -5,7 +5,6 @@ public class Day11
 {
     private long[] Divisors =
     {
-        1,
         10,
         100,
         1000,
@@ -48,8 +47,9 @@ public class Day11
             var f = (int)Math.Log10(stone);
             if (f % 2 == 1)
             {
-                newStoneCount = Blink(timesToBlink - 1, stone / Divisors[ (f + 1) / 2 ], cache, cacheSize) +
-                                Blink(timesToBlink - 1, stone % Divisors[ (f + 1) / 2 ], cache, cacheSize);
+                var e = Divisors[f / 2];
+                newStoneCount = Blink(timesToBlink - 1, stone / e, cache, cacheSize) +
+                                Blink(timesToBlink - 1, stone % e, cache, cacheSize);
             }
             else
                 newStoneCount = Blink(timesToBlink - 1, stone * 2024, cache, cacheSize);
