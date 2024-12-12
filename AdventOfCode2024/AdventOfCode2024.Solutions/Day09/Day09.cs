@@ -12,8 +12,10 @@ public class Day09
         public int Length { get; set; } = Length;
     }
 
-      public long Part1(string filename)
+    public long Part1(string filename)
     {
+        int[] offset = [0, 0, 1, 3, 6, 10, 15, 21, 28, 36];
+        
         var input = File.ReadAllBytes(filename).Select(a => a - '0').ToArray();
         var answer = 0L;
 
@@ -30,19 +32,13 @@ public class Day09
         {
             if (freeSpaceRemaining == fileToMoveRemaining)
             {
-                // Move entire file,  and update both pointers
-                for (var k = 0; k < freeSpaceRemaining; k++)
-                {
-                    answer += position * (fileToMoveBlockPtr/2);
-                    position++;
-                }
+                answer += ((long)(freeSpaceRemaining * position) + offset[freeSpaceRemaining]) * (fileToMoveBlockPtr / 2);
+                position += freeSpaceRemaining;
                 
                 // We are about to skip over a file, so also need to add that
-                for (var k = 0; k < input[freeSpaceBlockPtr+1]; k++)
-                {
-                    answer += position * ((freeSpaceBlockPtr+1)/2);
-                    position++;
-                }
+                answer += ((long)(input[freeSpaceBlockPtr+1] * position) + offset[input[freeSpaceBlockPtr+1]]) * ((freeSpaceBlockPtr+1)/2);
+                position += input[freeSpaceBlockPtr+1];
+            
                 
                 freeSpaceBlockPtr += 2;
                 freeSpaceRemaining = input[freeSpaceBlockPtr];
@@ -53,29 +49,20 @@ public class Day09
             else if (freeSpaceRemaining < fileToMoveRemaining)
             {
                 // We don't have enough space, move what we can
-                for (var k = 0; k < freeSpaceRemaining; k++)
-                {
-                    answer += position * (fileToMoveBlockPtr/2);
-                    position++;
-                }
+                answer += ((long)(freeSpaceRemaining * position) + offset[freeSpaceRemaining]) * (fileToMoveBlockPtr / 2);
+                position += freeSpaceRemaining;
+               
 
                 if (freeSpaceBlockPtr + 1 >= fileToMoveBlockPtr)
                 {
                     fileToMoveRemaining -= freeSpaceRemaining;
-                    for (var k = 0; k < fileToMoveRemaining; k++)
-                    {
-                        answer += position * (fileToMoveBlockPtr/2);
-                        position++;
-                    }
+                    answer += ((long)(fileToMoveRemaining * position) + offset[fileToMoveRemaining]) * (fileToMoveBlockPtr / 2);
                     break;
                 }
                 
                 // We are about to skip over a file, so also need to add that
-                for (var k = 0; k < input[freeSpaceBlockPtr+1]; k++)
-                {
-                    answer += position * ((freeSpaceBlockPtr+1)/2);
-                    position++;
-                }
+                answer += ((long)(input[freeSpaceBlockPtr+1] * position) + offset[input[freeSpaceBlockPtr+1]]) * ((freeSpaceBlockPtr+1)/2);
+                position += input[freeSpaceBlockPtr+1];
                 
                 fileToMoveRemaining -= freeSpaceRemaining;
                 freeSpaceBlockPtr += 2;
@@ -84,11 +71,8 @@ public class Day09
             else
             {
                 // We have too much enough space, move what we can
-                for (var k = 0; k < fileToMoveRemaining; k++)
-                {
-                    answer += position * (fileToMoveBlockPtr/2);
-                    position++;
-                }
+                answer += ((long)(fileToMoveRemaining * position) + offset[fileToMoveRemaining]) * (fileToMoveBlockPtr/2);
+                position += fileToMoveRemaining;
                 
                 freeSpaceRemaining -= fileToMoveRemaining;
                 fileToMoveBlockPtr -= 2;
