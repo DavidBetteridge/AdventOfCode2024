@@ -14,7 +14,7 @@ public class Day09
 
     public long Part1(string filename)
     {
-        var input = File.ReadAllBytes(filename);
+        var input = File.ReadAllBytes(filename).AsSpan();
 
         var answer = 0L;
 
@@ -55,7 +55,7 @@ public class Day09
         {
             nextFileToMoveOutput--;
             nextFileToMoveOffset++;
-            if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0' || input[nextFileToMoveInput] - '0' == 0)
+            if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0')
             {
                 nextFileToMoveInput--;
                 nextFileToMoveOffset = 0;
@@ -70,14 +70,14 @@ public class Day09
             // Walk on one position
             nextFreeSpaceOutput++;
             nextFreeSpaceOffset++;
-            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0' || input[nextFreeSpaceInput] - '0' == 0)
+            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0' )
             {
                 nextFreeSpaceInput++;
                 nextFreeSpaceOffset = 0;
             }
             
             // If we are on a file,  then we need to keep walking until we find some free space
-            while (nextFreeSpaceOutput < outputLength && nextFreeSpaceInput % 2 == 0 && nextFreeSpaceOutput < nextFileToMoveOutput)
+            while (nextFreeSpaceOutput < outputLength && nextFreeSpaceOutput < nextFileToMoveOutput && nextFreeSpaceInput % 2 == 0 )
             {
                 // As we have walked over a file, we need to include it in the answer
                 answer += nextFreeSpaceOutput * (nextFreeSpaceInput / 2);
@@ -105,10 +105,7 @@ public class Day09
                 }
 
                 if (input[nextFileToMoveInput] - '0' == 0)
-                {
                     nextFileToMoveInput--;
-                    nextFileToMoveOffset = 0;
-                }
             }
             while (nextFileToMoveOutput > 0 && nextFileToMoveInput % 2 == 1) ;
         }
