@@ -46,9 +46,10 @@
 | Day11_Part1 | Part1      |    99.11 us |  1.266 us |  1.185 us |  1.00 |    0.02 |  48.7061 |  24.2920 |       - |  399.03 KB |        1.00 |
 |             |            |             |           |           |       |         |          |          |         |            |             |
 | Day11_Part2 | Part2      | 5,405.87 us | 24.883 us | 20.778 us |  1.00 |    0.01 | 351.5625 | 218.7500 | 85.9375 | 2633.08 KB |        1.00 |
-
-
-
+|             |            |             |           |           |       |         |          |          |          |             |
+| Day12_Part1 | Part1      |   375.2 us |  3.38 us |  3.16 us |  1.00 |    0.01 |   8.7891 |   0.9766 |        - |  73.49 KB |        1.00 |
+|             |            |            |          |          |       |         |          |          |          |           |             |
+| Day12_Part2 | Part2      | 1,040.2 us | 16.93 us | 15.84 us |  1.00 |    0.02 | 123.0469 | 123.0469 | 123.0469 | 730.87 KB |        1.00 |
 
 
 
@@ -59,7 +60,7 @@
 ``` bash
 cd /Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Solutions
 dotnet run -c Release
-dotnet run -c Release --filter '*Day11BenchmarkTests*'
+dotnet run -c Release --filter '*Day12BenchmarkTests*'
 ```
 
 

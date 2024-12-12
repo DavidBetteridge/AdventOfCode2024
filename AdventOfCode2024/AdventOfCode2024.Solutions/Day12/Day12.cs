@@ -130,7 +130,6 @@ public class Day12
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
-                    Console.WriteLine($"{region} :: {column}, {row} NORTH");
                     
                     // Mark both ourselves, and all touching regions as an edge
                     var c = column;
@@ -163,7 +162,6 @@ public class Day12
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
-                    Console.WriteLine($"{region} :: {column}, {row} SOUTH");
                     
                     // Mark both ourselves, and all touching regions as an edge
                     var c = column;
@@ -196,7 +194,6 @@ public class Day12
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
-                    Console.WriteLine($"{region} :: {column}, {row} WEST");
                     
                     // Mark both ourselves, and all touching regions as an edge
                     var r = row;
@@ -229,7 +226,6 @@ public class Day12
                 {
                     // We are on an edge, which hasn't yet been counted.
                     sides += 1;
-                    Console.WriteLine($"{region} :: {column}, {row} EAST");
                     
                     // Mark both ourselves, and all touching regions as an edge
                     var r = row;
