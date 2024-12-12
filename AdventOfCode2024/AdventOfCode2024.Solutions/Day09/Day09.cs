@@ -12,9 +12,97 @@ public class Day09
         public int Length { get; set; } = Length;
     }
 
-    public long Part1(string filename)
+      public long Part1(string filename)
     {
-        var input = File.ReadAllBytes(filename).AsSpan();
+        var input = File.ReadAllBytes(filename).Select(a => a - '0').ToArray();
+        var answer = 0L;
+
+        // First block is a file of Id=0, so has no score.
+        var position = input[0];
+        var freeSpaceBlockPtr = 1;
+        var freeSpaceRemaining = input[freeSpaceBlockPtr];
+
+        // Skip the last block if it is free space
+        var fileToMoveBlockPtr = input.Length % 2 == 1 ? input.Length - 1 : input.Length - 2;
+        var fileToMoveRemaining = input[fileToMoveBlockPtr];
+
+        while (freeSpaceBlockPtr<= fileToMoveBlockPtr)
+        {
+            if (freeSpaceRemaining == fileToMoveRemaining)
+            {
+                // Move entire file,  and update both pointers
+                for (var k = 0; k < freeSpaceRemaining; k++)
+                {
+                    answer += position * (fileToMoveBlockPtr/2);
+                    position++;
+                }
+                
+                // We are about to skip over a file, so also need to add that
+                for (var k = 0; k < input[freeSpaceBlockPtr+1]; k++)
+                {
+                    answer += position * ((freeSpaceBlockPtr+1)/2);
+                    position++;
+                }
+                
+                freeSpaceBlockPtr += 2;
+                freeSpaceRemaining = input[freeSpaceBlockPtr];
+
+                fileToMoveBlockPtr -= 2;
+                fileToMoveRemaining = input[fileToMoveBlockPtr];
+            }
+            else if (freeSpaceRemaining < fileToMoveRemaining)
+            {
+                // We don't have enough space, move what we can
+                for (var k = 0; k < freeSpaceRemaining; k++)
+                {
+                    answer += position * (fileToMoveBlockPtr/2);
+                    position++;
+                }
+
+                if (freeSpaceBlockPtr + 1 >= fileToMoveBlockPtr)
+                {
+                    fileToMoveRemaining -= freeSpaceRemaining;
+                    for (var k = 0; k < fileToMoveRemaining; k++)
+                    {
+                        answer += position * (fileToMoveBlockPtr/2);
+                        position++;
+                    }
+                    break;
+                }
+                
+                // We are about to skip over a file, so also need to add that
+                for (var k = 0; k < input[freeSpaceBlockPtr+1]; k++)
+                {
+                    answer += position * ((freeSpaceBlockPtr+1)/2);
+                    position++;
+                }
+                
+                fileToMoveRemaining -= freeSpaceRemaining;
+                freeSpaceBlockPtr += 2;
+                freeSpaceRemaining = input[freeSpaceBlockPtr];
+            }
+            else
+            {
+                // We have too much enough space, move what we can
+                for (var k = 0; k < fileToMoveRemaining; k++)
+                {
+                    answer += position * (fileToMoveBlockPtr/2);
+                    position++;
+                }
+                
+                freeSpaceRemaining -= fileToMoveRemaining;
+                fileToMoveBlockPtr -= 2;
+                fileToMoveRemaining = input[fileToMoveBlockPtr];
+            }
+        }
+       
+        return answer;
+
+    }
+    
+    public long Part1_InputOutput(string filename)
+    {
+        var input = File.ReadAllBytes(filename).Select(a => a - '0').ToArray();
 
         var answer = 0L;
 
@@ -22,7 +110,7 @@ public class Day09
         var i = 0;
         while (i < input.Length)
         {
-            outputLength += input[i] - '0';
+            outputLength += input[i];
             i++;
         }
 
@@ -39,7 +127,7 @@ public class Day09
             
             nextFreeSpaceOutput++;
             nextFreeSpaceOffset++;
-            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0')
+            if (nextFreeSpaceOffset == input[nextFreeSpaceInput])
             {
                 nextFreeSpaceInput++;
                 nextFreeSpaceOffset = 0;
@@ -55,7 +143,7 @@ public class Day09
         {
             nextFileToMoveOutput--;
             nextFileToMoveOffset++;
-            if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0')
+            if (nextFileToMoveOffset == input[nextFileToMoveInput])
             {
                 nextFileToMoveInput--;
                 nextFileToMoveOffset = 0;
@@ -70,7 +158,7 @@ public class Day09
             // Walk on one position
             nextFreeSpaceOutput++;
             nextFreeSpaceOffset++;
-            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0' )
+            if (nextFreeSpaceOffset == input[nextFreeSpaceInput] )
             {
                 nextFreeSpaceInput++;
                 nextFreeSpaceOffset = 0;
@@ -84,12 +172,12 @@ public class Day09
                 
                 nextFreeSpaceOutput++;
                 nextFreeSpaceOffset++;
-                if (nextFreeSpaceOffset == input[nextFreeSpaceInput] - '0')
+                if (nextFreeSpaceOffset == input[nextFreeSpaceInput])
                 {
                     nextFreeSpaceInput++;
                     nextFreeSpaceOffset = 0;
                 }
-                if (input[nextFreeSpaceInput] - '0' == 0)
+                if (input[nextFreeSpaceInput] == 0)
                     nextFreeSpaceInput++;
             }
 
@@ -98,13 +186,13 @@ public class Day09
             {
                 nextFileToMoveOutput--;
                 nextFileToMoveOffset++;
-                if (nextFileToMoveOffset == input[nextFileToMoveInput] - '0')
+                if (nextFileToMoveOffset == input[nextFileToMoveInput])
                 {
                     nextFileToMoveInput--;
                     nextFileToMoveOffset = 0;
                 }
 
-                if (input[nextFileToMoveInput] - '0' == 0)
+                if (input[nextFileToMoveInput] == 0)
                     nextFileToMoveInput--;
             }
             while (nextFileToMoveOutput > 0 && nextFileToMoveInput % 2 == 1) ;
