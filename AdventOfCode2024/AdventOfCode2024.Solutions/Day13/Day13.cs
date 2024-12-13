@@ -2,10 +2,10 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day13
 {
-    public long Part1(string filename)
+    public double Part1(string filename)
     {
         var input = File.ReadAllBytes(filename).AsSpan();
-        var answer = 0L;
+        var answer = 0D;
 
         var i = 0;
         while (i < input.Length)
@@ -64,9 +64,9 @@ public class Day13
 
             i += 3;  // Skip blank line
             
-            var a = (long)Math.Round(PX / AX - (PY - PX / AX * AY) / (BY - BX / AX * AY) * (BX / AX), 0);
+            var a = Math.Round(PX / AX - (PY - PX / AX * AY) / (BY - BX / AX * AY) * (BX / AX), 0);
 
-            var b =(long)Math.Round( (PX - (a * AX)) / BX, 0);
+            var b = (PX - (a * AX)) / BX;
                
 
             if (((a * AX) + (b * BX) == PX) && ((a * AY) + (b * BY) == PY))
@@ -79,10 +79,10 @@ public class Day13
         return answer;
     }
     
-      public long Part2(string filename)
+    public double Part2(string filename)
     {
         var input = File.ReadAllBytes(filename).AsSpan();
-        var answer = 0L;
+        var answer = 0D;
 
         var i = 0;
         while (i < input.Length)
@@ -143,9 +143,9 @@ public class Day13
 
             i += 3;  // Skip blank line
             
-            var a = (long)Math.Round(PX / AX - (PY - PX / AX * AY) / (BY - BX / AX * AY) * (BX / AX), 0);
+            var a = Math.Round(PX / AX - (PY - PX / AX * AY) / (BY - BX / AX * AY) * (BX / AX), 0);
 
-            var b =(long)Math.Round( (PX - (a * AX)) / BX, 0);
+            var b = Math.Round((PX - (a * AX)) / BX, 0);
                
 
             if (((a * AX) + (b * BX) == PX) && ((a * AY) + (b * BY) == PY))
