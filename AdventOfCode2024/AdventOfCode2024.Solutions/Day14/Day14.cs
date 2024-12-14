@@ -150,16 +150,17 @@ public class Day14
         const int height = 103;
        
         var time = 0;
+        var board = new bool[width * height];
         while (true)
         {
             time++;
-            var board = new bool[width, height];
+            Array.Clear(board);
 
             for (var robot = 0; robot < robots.Length; robot++)
             {
                 var x = mod(xs[robot] + (time * vxs[robot]), width);
                 var y = mod(ys[robot] + (time * vys[robot]), height);
-                board[x, y] = true;
+                board[(y * width) + x] = true;
             }
             
             // Can we find space 5 space
@@ -167,22 +168,24 @@ public class Day14
             {
                 for (var column = 0; column < width-7; column++)
                 {
+                    var idx = (column * width) + row;
                     //.XXXXX.
-                    if ( !board[column, row] && board[column+1, row] && board[column+2, row] && board[column+3, row] && board[column+4, row] && board[column+5, row] && !board[column+6, row])
+                    if ( !board[idx] && board[idx+1] && board[idx+2] && board[idx+3] && board[idx+4] && board[idx+5] && !board[idx+6])
                     {
                         //..XXX..
-                        if (!board[column, row - 1] && !board[column + 1, row - 1] && board[column + 2, row - 1] &&
-                            board[column + 3, row - 1] && board[column + 4, row - 1] && !board[column + 5, row - 1] &&
-                            !board[column + 6, row - 1])
+                        idx -= width;
+                        if (!board[idx] && !board[idx+1] 
+                            && board[idx+2] && board[idx+3] && board[idx+4] && 
+                            !board[idx+5] && !board[idx+6])
                         {
 
                             //..X..
-                            if (!board[column, row - 2] && !board[column + 1, row - 2] && !board[column + 2, row - 2] &&
-                                board[column + 3, row - 2] && !board[column + 4, row - 2] &&
-                                !board[column + 5, row - 2] &&
-                                !board[column + 6, row - 2])
+                            idx -= width;
+                            if (!board[idx] && !board[idx+1] && !board[idx+2] &&
+                                board[idx+3] && 
+                                !board[idx+4] && !board[idx+5] && !board[idx+6])
                             {
-                                // Display(board);
+                                Display();
                                 return time;
                             }
                         }
@@ -190,21 +193,24 @@ public class Day14
                 }
             }
         }
-
-        void Display(bool[,] board)
+        
+        void Display()
         {
             for (var row = 0; row < height; row++)
             {
                 Console.WriteLine();
                 for (var column = 0; column < width; column++)
                 {
-                    Console.Write(board[column, row] ? 'X' : ' ');
+                    Console.Write(board[(row*width)+column] ? 'X' : ' ');
                 }
             }
         }
+        
     }
     
     int mod(int x, int m) {
         return (x%m + m)%m;
     }
+    
+
 }
