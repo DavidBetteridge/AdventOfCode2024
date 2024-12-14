@@ -57,11 +57,6 @@ public class Day14
             }
             vy = sign * vy;
 
-            if (line != $"p={x},{y} v={vx},{vy}")
-            {
-                Console.WriteLine("Parse error");
-            }
-
             var midX = (width-1)/2;
             var midY = (height-1)/2;
             
@@ -185,7 +180,7 @@ public class Day14
                                 board[idx+3] && 
                                 !board[idx+4] && !board[idx+5] && !board[idx+6])
                             {
-                                Display();
+                                // Display();
                                 return time;
                             }
                         }
