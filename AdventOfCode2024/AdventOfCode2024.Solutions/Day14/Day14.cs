@@ -148,9 +148,7 @@ public class Day14
 
         const int width = 101;
         const int height = 103;
-        // const int width = 11;
-        // const int height = 7;
-        
+       
         var time = 0;
         while (true)
         {
