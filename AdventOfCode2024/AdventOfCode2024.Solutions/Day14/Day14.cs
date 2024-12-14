@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day14
@@ -84,12 +86,8 @@ public class Day14
     public int Part2(string filename)
     {
         var robots = File.ReadAllLines(filename);
-
-        var xs = new int[robots.Length];
-        var ys = new int[robots.Length];
-        var vxs = new int[robots.Length];
-        var vys = new int[robots.Length];
-
+        var details = new int[robots.Length*4];
+        
         var lineNumber = 0;
         foreach (var line in robots)
         {
@@ -103,7 +101,7 @@ public class Day14
                 i++;
                 x = (x * 10) + line[i] - '0';
             }
-            xs[lineNumber] = sign * x;
+            details[lineNumber] = sign * x;
 
             i+=2;
             sign = line[i] == '-' ? -1 : 1;
@@ -114,7 +112,7 @@ public class Day14
                 i++;
                 y = y * 10 + line[i] - '0';
             }
-            ys[lineNumber] = sign * y;
+            details[lineNumber+2] = sign * y;
 
             i+=4;
             sign = line[i] == '-' ? -1 : 1;
@@ -125,7 +123,7 @@ public class Day14
                 i++;
                 vx = vx * 10 + line[i] - '0';
             }
-            vxs[lineNumber] = sign * vx;
+            details[lineNumber+1] = sign * vx;
 
             i+=2;
             sign = line[i] == '-' ? -1 : 1;
@@ -136,9 +134,9 @@ public class Day14
                 i++;
                 vy = vy * 10 + line[i] - '0';
             }
-            vys[lineNumber] = sign * vy;
+            details[lineNumber+3] = sign * vy;
 
-            lineNumber++;
+            lineNumber += 4;
         }
 
         const int width = 101;
@@ -146,48 +144,36 @@ public class Day14
        
         var time = 0;
         var board = new bool[width * height];
-        while (true)
+        var highestEntropy = 0;
+        var bestTime = 0;
+        while (time < (width * height))
         {
             time++;
             Array.Clear(board);
 
+            var i = 0;
             for (var robot = 0; robot < robots.Length; robot++)
             {
-                var x = mod(xs[robot] + (time * vxs[robot]), width);
-                var y = mod(ys[robot] + (time * vys[robot]), height);
+                var x = mod(details[i] + (time * details[i+1]), width);
+                var y = mod(details[i+2] + (time * details[i+3]), height);
                 board[(y * width) + x] = true;
+                i += 4;
             }
-            
-            // Can we find space 5 space
-            for (var row = 3; row < height; row++)
-            {
-                for (var column = 0; column < width-7; column++)
-                {
-                    var idx = (column * width) + row;
-                    //.XXXXX.
-                    if ( !board[idx] && board[idx+1] && board[idx+2] && board[idx+3] && board[idx+4] && board[idx+5] && !board[idx+6])
-                    {
-                        //..XXX..
-                        idx -= width;
-                        if (!board[idx] && !board[idx+1] 
-                            && board[idx+2] && board[idx+3] && board[idx+4] && 
-                            !board[idx+5] && !board[idx+6])
-                        {
 
-                            //..X..
-                            idx -= width;
-                            if (!board[idx] && !board[idx+1] && !board[idx+2] &&
-                                board[idx+3] && 
-                                !board[idx+4] && !board[idx+5] && !board[idx+6])
-                            {
-                                // Display();
-                                return time;
-                            }
-                        }
-                    }
-                }
+            var entropy = 0;
+            for (var j = 0; j < (width * height)-1; j++)
+            {
+                if (board[j] && board[j + 1])
+                    entropy++;
+            }
+
+            if (entropy > highestEntropy)
+            {
+                highestEntropy = entropy;
+                bestTime = time;
             }
         }
+        return bestTime;
         
         void Display()
         {
@@ -203,6 +189,7 @@ public class Day14
         
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     int mod(int x, int m) {
         return (x%m + m)%m;
     }
