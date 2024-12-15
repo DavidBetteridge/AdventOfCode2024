@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace AdventOfCode2024.Solutions;
 
 public class Day15
@@ -45,13 +43,8 @@ public class Day15
             }
         }
 
-        Console.WriteLine("Initial State");
-        Display();
-        
         foreach (var command in commands)
         {
-            Console.WriteLine($"Move {command}:");
-
             if (command == '<')
             {
                 // Is there a space between us and the wall?
@@ -155,9 +148,6 @@ public class Day15
                     robot = (robot.Item1, robot.Item2+1);
                 }
             }
-
-            
-         //   Display();
         }
 
         var score = 0;
@@ -193,7 +183,7 @@ public class Day15
         }
     }
     
-       public int Part2(string filename)
+    public int Part2(string filename)
     {
         var lines = File.ReadAllLines(filename);
 
@@ -246,13 +236,8 @@ public class Day15
             }
         }
 
-        Console.WriteLine("Initial State");
-        Display();
-        
         foreach (var command in commands)
         {
-            Console.WriteLine($"Move {command}:");
-
             if (command == '<')
             {
                 // Is there a space between us and the wall?
@@ -316,8 +301,6 @@ public class Day15
                     
                     map[newY][newX] = thingToMove;
                 }
-                    
-            
             }
             
             if (command == '>')
@@ -384,9 +367,6 @@ public class Day15
                     map[newY][newX] = thingToMove;
                 }
             }
-
-            
-          //  Display();
         }
 
         var score = 0;
@@ -400,7 +380,6 @@ public class Day15
                 }
             }
         }
-        
 
         return score;
         
