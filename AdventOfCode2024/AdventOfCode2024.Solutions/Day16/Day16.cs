@@ -100,7 +100,7 @@ public class Day16
                 var cost = current.dir switch
                 {
                     east => 1001,
-                    south => 0,
+                    south => 1,
                     west => 1001,
                     _ => -1
                 };

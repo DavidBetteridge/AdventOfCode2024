@@ -10,6 +10,13 @@ public class Day16Tests
     }
     
     [Fact]
+    public void Test_Part1_Sample2()
+    {
+        var solver = new Solutions.Day16();
+        Assert.Equal(11048, solver.Part1("Day16/sample2.txt"));
+    }
+    
+    [Fact]
     public void Test_Part1()
     {
         var solver = new Solutions.Day16();
