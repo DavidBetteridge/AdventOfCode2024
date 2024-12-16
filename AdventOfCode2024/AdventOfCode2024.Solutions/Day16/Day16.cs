@@ -3,7 +3,6 @@ namespace AdventOfCode2024.Solutions;
 public class Day16
 {
     private record Loc(int x, int y);
-    private record LocWithDir(int x, int y, int dir);
     private record Position(int x, int y, int dir, int score);
     public int Part1(string filename)
     {
