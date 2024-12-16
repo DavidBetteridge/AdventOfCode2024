@@ -31,8 +31,8 @@ public class Day16
             }
         }
 
-        var seen = new HashSet<int>();  // (row * width + col << 2) + dir
-        seen.Add((((reindeer.y * width) + reindeer.x) << 2) + reindeer.dir);
+        var seen = new Dictionary<int,int>();  // (row * width + col << 2) + dir. containing lowest score
+        seen.Add((((reindeer.y * width) + reindeer.x) << 2) + reindeer.dir,0);
         
         // X, Y, Dir, Lowest Score
         var routesToTry = new Stack<Position>();
@@ -61,82 +61,130 @@ public class Day16
         
         return bestScore;
 
-        void TryNorth(Position currently)
+        void TryNorth(Position current)
         {
-            if (!walls[(currently.y - 1) * width + currently.x] &&
-                !seen.Contains(((((currently.y-1) * width) + currently.x) << 2) + currently.dir))
+            if (!walls[(current.y - 1) * width + current.x])
             {
-                var cost = currently.dir switch
+               var cost = current.dir switch
                 {
-                    north => 0,
-                    east => 1000,
-                    west => 1000,
+                    north => 1,
+                    east => 1001,
+                    west => 1001,
                     _ => -1
                 };
                 if (cost != -1)
                 {
-                    routesToTry.Push(new Position(currently.x, currently.y - 1, north, currently.score + cost + 1));
-                    seen.Add(((((currently.y-1) * width) + currently.x) << 2) + north);
+                    var currentCost = seen[(((current.y * width) + current.x) << 2) + current.dir];
+                    var key = ((((current.y-1) * width) + current.x) << 2) + north;
+                    if (seen.TryGetValue(key, out var previousScore))
+                    {
+                        if (currentCost + cost < previousScore)
+                        {
+                            routesToTry.Push(new Position(current.x, current.y - 1, north, current.score + cost));
+                            seen[key] = currentCost + cost;
+                        }
+                    }
+                    else
+                    {
+                        routesToTry.Push(new Position(current.x, current.y - 1, north, current.score + cost));
+                        seen[key] = currentCost + cost;
+                    }
                 }
             }
         }
         
-        void TrySouth(Position currently)
+        void TrySouth(Position current)
         {
-            if (!walls[(currently.y + 1) * width + currently.x] &&
-                !seen.Contains(((((currently.y+1) * width) + currently.x) << 2) + currently.dir))
+            if (!walls[(current.y + 1) * width + current.x])
             {
-                var cost = currently.dir switch
+                var cost = current.dir switch
                 {
-                    east => 1000,
+                    east => 1001,
                     south => 0,
-                    west => 1000,
+                    west => 1001,
                     _ => -1
                 };
                 if (cost != -1)
                 {
-                    routesToTry.Push(new Position(currently.x, currently.y + 1, south, currently.score + cost + 1));
-                    seen.Add(((((currently.y + 1) * width) + currently.x) << 2) + south);
+                    var currentCost = seen[(((current.y * width) + current.x) << 2) + current.dir];
+                    var key = ((((current.y+1) * width) + current.x) << 2) + south;
+                    if (seen.TryGetValue(key, out var previousScore))
+                    {
+                        if (currentCost + cost < previousScore)
+                        {
+                            routesToTry.Push(new Position(current.x, current.y + 1, south, current.score + cost));
+                            seen[key] = currentCost + cost;
+                        }
+                    }
+                    else
+                    {
+                        routesToTry.Push(new Position(current.x, current.y + 1, south, current.score + cost));
+                        seen[key] = currentCost + cost;
+                    }
                 }
             }
         }
         
-        void TryWest(Position currently)
+        void TryWest(Position current)
         {
-            if (!walls[(currently.y) * width + currently.x-1] &&
-                !seen.Contains(((((currently.y) * width) + (currently.x-1)) << 2) + currently.dir))
+            if (!walls[(current.y) * width + current.x-1])
             {
-                var cost = currently.dir switch
+                var cost = current.dir switch
                 {
-                    north => 1000,
-                    south => 1000,
-                    west => 0,
+                    north => 1001,
+                    south => 1001,
+                    west => 1,
                     _ => -1
                 };
                 if (cost != -1)
                 {
-                    routesToTry.Push(new Position(currently.x - 1, currently.y, west, currently.score + cost + 1));
-                    seen.Add(((((currently.y) * width) + (currently.x - 1)) << 2) + west);
+                    var currentCost = seen[(((current.y * width) + current.x) << 2) + current.dir];
+                    var key = ((((current.y) * width) + (current.x-1) << 2) + west);
+                    if (seen.TryGetValue(key, out var previousScore))
+                    {
+                        if (currentCost + cost < previousScore)
+                        {
+                            routesToTry.Push(new Position(current.x-1, current.y , west, current.score + cost));
+                            seen[key] = currentCost + cost;
+                        }
+                    }
+                    else
+                    {
+                        routesToTry.Push(new Position(current.x-1, current.y , west, current.score + cost));
+                        seen[key] = currentCost + cost;
+                    }
                 }
             }
         }
         
-        void TryEast(Position currently)
+        void TryEast(Position current)
         {
-            if (!walls[(currently.y) * width + currently.x+1] &&
-                !seen.Contains(((((currently.y) * width) + (currently.x+1)) << 2) + currently.dir))
+            if (!walls[(current.y) * width + current.x+1])
             {
-                var cost = currently.dir switch
+                var cost = current.dir switch
                 {
-                    north => 1000,
-                    east => 0,
-                    south => 1000,
+                    north => 1001,
+                    east => 1,
+                    south => 1001,
                     _ => -1
                 };
                 if (cost != -1)
                 {
-                    routesToTry.Push(new Position(currently.x + 1, currently.y, east, currently.score + cost + 1));
-                    seen.Add(((((currently.y) * width) + (currently.x + 1)) << 2) + east);
+                    var currentCost = seen[(((current.y * width) + current.x) << 2) + current.dir];
+                    var key = ((((current.y) * width) + (current.x+1) << 2) + east);
+                    if (seen.TryGetValue(key, out var previousScore))
+                    {
+                        if (currentCost + cost < previousScore)
+                        {
+                            routesToTry.Push(new Position(current.x+1, current.y , east, current.score + cost));
+                            seen[key] = currentCost + cost;
+                        }
+                    }
+                    else
+                    {
+                        routesToTry.Push(new Position(current.x+1, current.y , east, current.score + cost));
+                        seen[key] = currentCost + cost;
+                    }
                 }
             }
         }
