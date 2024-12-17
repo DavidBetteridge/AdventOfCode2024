@@ -754,8 +754,8 @@ public class Day16
         
         var bestScore = Math.Min(a4, Math.Min(a3, Math.Min(a1,a2)));
         
-        var seats = new HashSet<Loc>();
-        seats.Add(new Loc(target.x, target.y));
+        var seats = new HashSet<int>();
+        seats.Add(target.y * width + target.x);
         var toSpend = bestScore;
 
         var possibleRoutes = new Stack<Position>();
@@ -786,17 +786,17 @@ public class Day16
                 if (costFromSouth + 1 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y+1, north, costFromSouth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromWest + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x-1, possibleRoute.y, east, costFromWest));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromEast + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x+1, possibleRoute.y, west, costFromEast));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
             }
             
@@ -805,17 +805,17 @@ public class Day16
                 if (costFromEast + 1 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x+1, possibleRoute.y, west, costFromEast));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromNorth + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y-1, south, costFromNorth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromSouth + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y+1, north, costFromSouth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
             }
 
@@ -824,17 +824,17 @@ public class Day16
                 if (costFromNorth + 1 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y-1, south, costFromNorth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromWest + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x-1, possibleRoute.y, east, costFromWest));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromEast + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x+1, possibleRoute.y, west, costFromEast));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
             }
             
@@ -843,17 +843,17 @@ public class Day16
                 if (costFromWest + 1 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x-1, possibleRoute.y, east, costFromWest));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromNorth + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y-1, south, costFromNorth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
                 if (costFromSouth + 1001 == possibleRoute.score)
                 {
                     possibleRoutes.Push(new Position(possibleRoute.x, possibleRoute.y+1, north, costFromSouth));
-                    seats.Add(new Loc(possibleRoute.x, possibleRoute.y));
+                    seats.Add(width * possibleRoute.y + possibleRoute.x);
                 }
             }
         }
