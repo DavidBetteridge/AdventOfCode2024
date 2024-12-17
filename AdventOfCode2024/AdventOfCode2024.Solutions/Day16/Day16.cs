@@ -1,10 +1,154 @@
+using System.Diagnostics;
+
 namespace AdventOfCode2024.Solutions;
+
+using Cost = int;
+using Index = int;
 
 public class Day16
 {
     private record Loc(int x, int y);
     private record Position(int x, int y, int dir, int score);
+
+    // Dijkstra
     public int Part1(string filename)
+    {
+        const int east = 0;
+        const int north = 1;
+        const int south = 2;
+        const int west = 3;
+
+        var file = File.ReadAllLines(filename);
+        var height = file.Length;
+        var width = file[0].Length;
+        var walls = new bool[width * height];
+
+        var reindeer = new Position(-1, -1, east, 0);
+        var target = new Loc(-1, -1);
+        for (var row = 0; row < height; row++)
+        {
+            for (var col = 0; col < width; col++)
+            {
+                if (file[row][col] == 'S')
+                    reindeer = new Position(col, row, east, 0);
+                else if (file[row][col] == 'E')
+                    target = new Loc(col, row);
+                else if (file[row][col] == '#')
+                    walls[row * width + col] = true;
+            }
+        }
+        
+        var costs = new int[width*height*4];
+        var queue = new PriorityQueue<Index, Cost>();
+        
+        var source = (((reindeer.y * width) + reindeer.x) << 2) + reindeer.dir;
+        queue.Enqueue(source,0);
+        costs[source] = 0;
+
+        for (var row = 0; row < height; row++)
+        {
+            for (var col = 0; col < width; col++)
+            {
+                if (!walls[(row * width) + col])
+                {
+                    for (var dir = 0; dir < 4; dir++)
+                    {
+                        var v = (((row * width) + col) << 2) + dir;
+                        if (v != source)
+                        {
+                            costs[v] = int.MaxValue;
+                        }
+                    }
+                }
+            }
+        }
+
+        while (queue.Count > 0)
+        {
+            var u = queue.Dequeue();
+            if (costs[u] == int.MaxValue) break;
+            
+            var dir = u & 0b00000000011;
+            var loc = u >> 2;
+            var col = loc % width;
+            var row = (loc-col) / width;
+
+            if (col == target.x && row == target.y) break;
+            
+            if ((!walls[(row - 1) * width + col]) && dir != south)
+            {
+                // North
+                var v = ((((row-1) * width) + col) << 2) + north;
+                var alt = costs[u] + Cost(dir, north);
+                if (alt < costs[v])
+                {
+                    if (alt == 0) Debugger.Break();
+                    costs[v] = alt;
+                    queue.Remove(v, out _, out _);
+                    queue.Enqueue(v, alt);
+                }
+            }
+
+            if (!walls[(row + 1) * width + col] && dir != north)
+            {
+                // South
+                var v = ((((row+1) * width) + col) << 2) + south;
+                var alt = costs[u] + Cost(dir, south);
+                if (alt < costs[v])
+                {
+                    if (alt == 0) Debugger.Break();
+                    costs[v] = alt;
+                    queue.Remove(v, out _, out _);
+                    queue.Enqueue(v, alt);
+                }
+            }
+
+            if (!walls[(row) * width + (col-1)] && dir != east)
+            {
+                // West
+                var v = ((((row) * width) + (col -1)) << 2) + west;
+                var alt = costs[u] + Cost(dir, west);
+                if (alt < costs[v])
+                {
+                    if (alt == 0) Debugger.Break();
+                    costs[v] = alt;
+                    queue.Remove(v, out _, out _);
+                    queue.Enqueue(v, alt);
+                }
+            }
+
+            if (!walls[(row) * width + (col+1)]&& dir != west)
+            {
+                // West
+                var v = ((((row) * width) + (col +1)) << 2) + east;
+                var alt = costs[u] + Cost(dir, east);
+                if (alt < costs[v])
+                {
+                    if (alt == 0) Debugger.Break();
+                    costs[v] = alt;
+                    queue.Remove(v, out _, out _);
+                    queue.Enqueue(v, alt);
+                }
+            }
+        }
+
+        var a1 = costs[((((target.y) * width) + target.x) << 2) + east];
+        var a2 = costs[((((target.y) * width) + target.x) << 2) + west];
+        var a3 = costs[((((target.y) * width) + target.x) << 2) + south];
+        var a4 = costs[((((target.y) * width) + target.x) << 2) + north];
+        
+        return Math.Min(a4, Math.Min(a3, Math.Min(a1,a2)));
+    }
+
+    private int Cost(int fromDir, int toDir)
+    {
+        if (fromDir == toDir)
+            return 1;
+        else
+            return 1001;
+    }
+
+    public int Part1_Original(string filename)
     {
         const int north=1;
         const int east=2;

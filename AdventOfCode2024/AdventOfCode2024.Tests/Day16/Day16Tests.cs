@@ -23,7 +23,6 @@ public class Day16Tests
         Assert.Equal(90460, solver.Part1("Day16/input.txt"));
     }
     
-    
     [Fact]
     public void Test_Part2_Sample()
     {
