@@ -93,9 +93,10 @@ public class Day17
 
     public ulong Part2()
     {
-        var program = "2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0";
+        var program = new[] {2, 4, 1, 7, 7, 5, 1, 7, 4, 6, 0, 3, 5, 5, 3, 0};
         ulong start = 8;
-            
+        var output = new List<int>();
+        
         while (true) 
         {
             var value = Try(start++);
@@ -104,14 +105,36 @@ public class Day17
 
         ulong Try(ulong toTry)
         {
-            var output = Run(toTry);
+            Run(toTry);
 
-            if (output == program)
+            // Are the lists output and program the same?
+            if (output.Count == program.Length)
             {
-                return toTry;
+                var same = true;
+                for (var i = 0; i < program.Length; i++)
+                {
+                    if (output[i] != program[i])
+                    {
+                        same = false;
+                        break;
+                    }
+                }
+                if (same)
+                    return toTry;
             }
-
-            if (program.EndsWith(output))
+            
+            // Does program end with output?
+            var ok = true;
+            for (var i = 0; i < output.Count; i++)
+            {
+                if (program[^(i + 1)] != output[^(i + 1)])
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            
+            if (ok)
             {
                 for (ulong i = 0; i < 8; i++)
                 {
@@ -124,34 +147,31 @@ public class Day17
 
             return 0;
         }
-    }
-    
-    public string Run(ulong regA)
-    {
-        var output = new List<string>();
-
-        // Program: 2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0
-        do
+        
+        void Run(ulong regA)
         {
-            // 2,4
-            var regB = regA % 8; // Take last 3 bits
+            output.Clear();
+            // Program: 2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0
+            do
+            {
+                // 2,4
+                var regB = regA % 8; // Take last 3 bits
 
-            // 1,7
-            var shiftBy = regB ^ 7; // and not them
+                // 1,7
+                var shiftBy = regB ^ 7; // and not them
 
-            // 7,5
-            var regC = regA >> (int)shiftBy; // lose between 0 and 7 bits
+                // 7,5
+                var regC = regA >> (int)shiftBy; // lose between 0 and 7 bits
 
-            // 4,6
-            regB = regB ^ regC;
+                // 4,6
+                regB = regB ^ regC;
 
-            // 5,5
-            output.Add((regB % 8).ToString());
+                // 5,5
+                output.Add((int)(regB % 8));
 
-            // 0,3
-            regA = regA >> 3;
-        } while (regA != 0);
-
-        return string.Join(',', output);
+                // 0,3
+                regA = regA >> 3;
+            } while (regA != 0);
+        }
     }
 }
