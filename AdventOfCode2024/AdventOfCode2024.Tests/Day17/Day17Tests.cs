@@ -21,7 +21,7 @@ public class Day17Tests
     public void Test_Part1_Compliled()
     {
         var solver = new Solutions.Day17();
-        Assert.Equal("1,4,6,1,6,4,3,0,3", solver.Part1_Compiled(66245665));
+        Assert.Equal("1,4,6,1,6,4,3,0,3", solver.Run(66245665));
     }
     
     [Fact]

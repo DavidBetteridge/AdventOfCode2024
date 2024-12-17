@@ -3,36 +3,6 @@ namespace AdventOfCode2024.Solutions;
 public class Day17
 {
 
-    public string Part1_Compiled(ulong regA)
-    {
-        var output = new List<string>();
-
-        // Program: 2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0
-        do
-        {
-            // 2,4
-            var regB = regA % 8; // Take last 3 bits
-
-            // 1,7
-            var shiftBy = regB ^ 7; // and not them
-
-            // 7,5
-            var regC = regA >> (int)shiftBy; // lose between 0 and 7 bits
-
-            // 4,6
-            regB = regB ^ regC;
-
-            // 5,5
-            output.Add((regB % 8).ToString());
-            if (output.Count > 30) return "";
-
-            // 0,3
-            regA = regA >> 3;
-        } while (regA != 0);
-
-        return string.Join(',', output);
-    }
-
     public string Part1(string filename)
     {
         var lines = File.ReadAllLines(filename);
@@ -132,19 +102,18 @@ public class Day17
 
         ulong Try(ulong toTry)
         {
-            var output = Part1_Compiled(toTry);
+            var output = Run(toTry);
 
             if (output == program)
             {
                 return toTry;
             }
 
-            if (program.EndsWith(output) && output != "")
+            if (program.EndsWith(output))
             {
-                Console.WriteLine($"{output} {toTry.ToString("B")}");
-                for (ulong i = 0; i < 64; i++)
+                for (ulong i = 0; i < 8; i++)
                 {
-                    var next = i | (toTry << 6);
+                    var next = i | (toTry << 3);
                     var value = Try(next);
                     if (value != 0)
                         return value;
@@ -155,5 +124,34 @@ public class Day17
         }
 
         return 0;
+    }
+    
+    public string Run(ulong regA)
+    {
+        var output = new List<string>();
+
+        // Program: 2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0
+        do
+        {
+            // 2,4
+            var regB = regA % 8; // Take last 3 bits
+
+            // 1,7
+            var shiftBy = regB ^ 7; // and not them
+
+            // 7,5
+            var regC = regA >> (int)shiftBy; // lose between 0 and 7 bits
+
+            // 4,6
+            regB = regB ^ regC;
+
+            // 5,5
+            output.Add((regB % 8).ToString());
+
+            // 0,3
+            regA = regA >> 3;
+        } while (regA != 0);
+
+        return string.Join(',', output);
     }
 }
