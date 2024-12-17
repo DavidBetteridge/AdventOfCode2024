@@ -94,9 +94,11 @@ public class Day17
     public ulong Part2()
     {
         var program = "2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0";
-        for (ulong start = 8; start < Math.Pow(2, 3 + 6); start++)
+        ulong start = 8;
+            
+        while (true) 
         {
-            var value = Try(start);
+            var value = Try(start++);
             if (value != 0) return value;
         }
 
@@ -122,8 +124,6 @@ public class Day17
 
             return 0;
         }
-
-        return 0;
     }
     
     public string Run(ulong regA)
