@@ -16,5 +16,19 @@ public class Day17Tests
         var solver = new Solutions.Day17();
         Assert.Equal("1,4,6,1,6,4,3,0,3", solver.Part1("Day17/input.txt"));
     }
+    
+    [Fact]
+    public void Test_Part1_Compliled()
+    {
+        var solver = new Solutions.Day17();
+        Assert.Equal("1,4,6,1,6,4,3,0,3", solver.Part1_Compiled(66245665));
+    }
+    
+    [Fact]
+    public void Test_Part2()
+    {
+        var solver = new Solutions.Day17();
+        Assert.Equal((ulong)265061364597659, solver.Part2());
+    }
 
 }

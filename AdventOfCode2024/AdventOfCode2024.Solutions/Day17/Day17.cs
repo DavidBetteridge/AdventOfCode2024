@@ -2,6 +2,37 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day17
 {
+
+    public string Part1_Compiled(ulong regA)
+    {
+        var output = new List<string>();
+
+        // Program: 2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0
+        do
+        {
+            // 2,4
+            var regB = regA % 8; // Take last 3 bits
+
+            // 1,7
+            var shiftBy = regB ^ 7; // and not them
+
+            // 7,5
+            var regC = regA >> (int)shiftBy; // lose between 0 and 7 bits
+
+            // 4,6
+            regB = regB ^ regC;
+
+            // 5,5
+            output.Add((regB % 8).ToString());
+            if (output.Count > 30) return "";
+
+            // 0,3
+            regA = regA >> 3;
+        } while (regA != 0);
+
+        return string.Join(',', output);
+    }
+
     public string Part1(string filename)
     {
         var lines = File.ReadAllLines(filename);
@@ -29,7 +60,7 @@ public class Day17
                 _ => -1 //throw new Exception($"Invalid combo {operand}")
             };
             ip += 2;
-            
+
             switch (opCode)
             {
                 case 0:
@@ -45,21 +76,21 @@ public class Day17
                     regB = regB ^ operand;
                     break;
                 }
-                
+
                 case 2:
                 {
                     //bst
                     regB = combo % 8;
                     break;
                 }
-                
+
                 case 3:
                 {
                     if (regA != 0)
                         ip = operand;
                     break;
                 }
-                
+
                 case 4:
                 {
                     //bxc
@@ -67,7 +98,7 @@ public class Day17
                     break;
                 }
 
-                
+
                 case 5:
                     output.Add((combo % 8).ToString());
                     break;
@@ -78,14 +109,51 @@ public class Day17
                     regC = (int)(regA / (Math.Pow(2, combo)));
                     break;
                 }
-                
+
                 default:
                     throw new Exception($@"Unknown opcode {opCode}");
             }
-            
-            
+
+
         }
-        
-        return string.Join(',',output);
+
+        return string.Join(',', output);
+    }
+
+
+    public ulong Part2()
+    {
+        var program = "2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0";
+        for (ulong start = 8; start < Math.Pow(2, 3 + 6); start++)
+        {
+            var value = Try(start);
+            if (value != 0) return value;
+        }
+
+        ulong Try(ulong toTry)
+        {
+            var output = Part1_Compiled(toTry);
+
+            if (output == program)
+            {
+                return toTry;
+            }
+
+            if (program.EndsWith(output) && output != "")
+            {
+                Console.WriteLine($"{output} {toTry.ToString("B")}");
+                for (ulong i = 0; i < 64; i++)
+                {
+                    var next = i | (toTry << 6);
+                    var value = Try(next);
+                    if (value != 0)
+                        return value;
+                }
+            }
+
+            return 0;
+        }
+
+        return 0;
     }
 }
