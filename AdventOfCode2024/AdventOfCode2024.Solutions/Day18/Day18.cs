@@ -6,21 +6,31 @@ public class Day18
     public int Part1(string filename, int size, int numberOfDrops)
     {
         var memory = new bool[size * size];
-        var drops = File.ReadAllLines(filename);
 
-        foreach (var drop in drops[..numberOfDrops])
+        var input = File.ReadAllBytes(filename).AsSpan();
+        var i = 0;
+        while (i < input.Length && numberOfDrops > 0)
         {
-            // x,y
-            var parts = drop.Split(',');
-            memory[ int.Parse(parts[1]) * size + int.Parse(parts[0]) ] = true;
+            var lhs = input[i++] - '0';
+            while (input[i] != ',')
+                lhs = lhs * 10 + input[i++] - '0';
+            i++;
+            
+            var rhs = input[i++] - '0';
+            while (i < input.Length && input[i] != '\n')
+                rhs = rhs * 10 + input[i++] - '0';
+            i++;
+            
+            memory[ rhs * size + lhs ] = true;
+            numberOfDrops--;
         }
-
+       
         var distances = new Distance[size*size];
         var queue = new PriorityQueue<int, Distance>();
         
         var source = 0;
         queue.Enqueue(source,0);
-        
+
         Array.Fill(distances, Distance.MaxValue);
         distances[source] = 0;
 
@@ -93,17 +103,30 @@ public class Day18
     public string Part2(string filename, int size, int startFrom)
     {
         var memory = new bool[size * size];
-        var drops = File.ReadAllLines(filename).
-                Select(line =>
-                {
-                    var parts = line.Split(',');
-                    return int.Parse(parts[1]) * size + int.Parse(parts[0]);
-                }).ToArray();
+        
+        var input = File.ReadAllBytes(filename).AsSpan();
+        var i = 0;
+        var drops = new List<int>();
+        while (i < input.Length)
+        {
+            var lhs = input[i++] - '0';
+            while (input[i] != ',')
+                lhs = lhs * 10 + input[i++] - '0';
+            i++;
+            
+            var rhs = input[i++] - '0';
+            while (i < input.Length && input[i] != '\n')
+                rhs = rhs * 10 + input[i++] - '0';
+            i++;
+            
+            drops.Add(rhs * size + lhs);
+        }
+        
 
         var lowerBound = startFrom;
-        var upperBound = drops.Length - 1;
+        var upperBound = drops.Count - 1;
         var lastWorked = startFrom;
-        var lastFailed = drops.Length;
+        var lastFailed = drops.Count;
         var distances = new Distance[size * size];
         var queue = new PriorityQueue<int, Distance>();
         
