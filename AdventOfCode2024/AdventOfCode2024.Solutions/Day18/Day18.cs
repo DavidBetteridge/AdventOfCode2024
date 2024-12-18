@@ -20,7 +20,7 @@ public class Day18
         
         var source = 0;
         queue.Enqueue(source,0);
-        distances[source] = 0;
+        
 
         for (var row = 0; row < size; row++)
         {
@@ -29,33 +29,23 @@ public class Day18
                 var v = ((row * size) + col);
                 if (!memory[v])
                 {
-                    if (v != source)
-                    {
-                        distances[v] = int.MaxValue;
-                    }
-                }
-                else
-                {
-                    distances[v] = -1;
+                    distances[v] = int.MaxValue;
                 }
             }
         }
-
+        distances[source] = 0;
 
         while (queue.Count > 0)
         {
             var u = queue.Dequeue();
-     //       if (distances[u] == int.MaxValue) break;
 
             var col = u % size;
-            var row = (u - col) / size;
-
-         //   if (col == size-1 && row == size-1) break;
+            var row = u / size;
 
             //North
-            if (row > 0 && (!memory[(row - 1) * size + col]))
+            var v = u - size;
+            if (row > 0 && (!memory[v]))
             {
-                var v = ((row - 1) * size) + col;
                 var alt = distances[u] + 1;
                 if (alt < distances[v])
                 {
@@ -66,9 +56,9 @@ public class Day18
             }
 
             //South
-            if ((row+1) < size && (!memory[(row + 1) * size + col]))
+            v = u + size;
+            if ((row + 1) < size && (!memory[v]))
             {
-                var v = ((row + 1) * size) + col;
                 var alt = distances[u] + 1;
                 if (alt < distances[v])
                 {
@@ -77,11 +67,11 @@ public class Day18
                     queue.Enqueue(v, alt);
                 }
             }
-            
+
             //West
-            if (col > 0 && (!memory[(row) * size + (col-1)]))
+            v = u - 1;
+            if (col > 0 && (!memory[v]))
             {
-                var v = ((row) * size) + (col-1);
                 var alt = distances[u] + 1;
                 if (alt < distances[v])
                 {
@@ -90,11 +80,11 @@ public class Day18
                     queue.Enqueue(v, alt);
                 }
             }
-            
+
             //East
-            if ((col+1) < size && (!memory[(row) * size + (col+1)]))
+            v = u + 1;
+            if ((col + 1) < size && (!memory[v]))
             {
-                var v = ((row) * size) + (col+1);
                 var alt = distances[u] + 1;
                 if (alt < distances[v])
                 {
@@ -114,7 +104,12 @@ public class Day18
     public string Part2(string filename, int size, int startFrom)
     {
         var memory = new bool[size * size];
-        var drops = File.ReadAllLines(filename);
+        var drops = File.ReadAllLines(filename).
+                Select(line =>
+                {
+                    var parts = line.Split(',');
+                    return int.Parse(parts[1]) * size + int.Parse(parts[0]);
+                }).ToArray();
 
         var lowerBound = startFrom;
         var upperBound = drops.Length - 1;
@@ -129,11 +124,7 @@ public class Day18
             Array.Clear(memory);
 
             foreach (var drop in drops[..numberOfDrops])
-            {
-                // x,y
-                var parts = drop.Split(',');
-                memory[int.Parse(parts[1]) * size + int.Parse(parts[0])] = true;
-            }
+                memory[drop] = true;
             
             queue.Clear();
             var source = 0;
@@ -157,12 +148,12 @@ public class Day18
             {
                 var u = queue.Dequeue();
                 var col = u % size;
-                var row = (u - col) / size;
+                var row = u / size;
 
                 //North
-                if (row > 0 && (!memory[(row - 1) * size + col]))
+                var v = u - size;
+                if (row > 0 && (!memory[v]))
                 {
-                    var v = ((row - 1) * size) + col;
                     var alt = distances[u] + 1;
                     if (alt < distances[v])
                     {
@@ -173,9 +164,9 @@ public class Day18
                 }
 
                 //South
-                if ((row + 1) < size && (!memory[(row + 1) * size + col]))
+                v = u + size;
+                if ((row + 1) < size && (!memory[v]))
                 {
-                    var v = ((row + 1) * size) + col;
                     var alt = distances[u] + 1;
                     if (alt < distances[v])
                     {
@@ -186,9 +177,9 @@ public class Day18
                 }
 
                 //West
-                if (col > 0 && (!memory[(row) * size + (col - 1)]))
+                v = u - 1;
+                if (col > 0 && (!memory[v]))
                 {
-                    var v = ((row) * size) + (col - 1);
                     var alt = distances[u] + 1;
                     if (alt < distances[v])
                     {
@@ -199,9 +190,9 @@ public class Day18
                 }
 
                 //East
-                if ((col + 1) < size && (!memory[(row) * size + (col + 1)]))
+                v = u + 1;
+                if ((col + 1) < size && (!memory[v]))
                 {
-                    var v = ((row) * size) + (col + 1);
                     var alt = distances[u] + 1;
                     if (alt < distances[v])
                     {
@@ -227,7 +218,9 @@ public class Day18
 
             if (lastWorked == lastFailed - 1)
             {
-                return drops[lastWorked];
+                var col = drops[lastWorked] % size;
+                var row = (drops[lastWorked] - col) / size;
+                return $"{col},{row}";
             }
             
         }
