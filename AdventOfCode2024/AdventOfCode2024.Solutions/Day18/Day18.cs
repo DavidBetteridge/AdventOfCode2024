@@ -21,18 +21,7 @@ public class Day18
         var source = 0;
         queue.Enqueue(source,0);
         
-
-        for (var row = 0; row < size; row++)
-        {
-            for (var col = 0; col < size; col++)
-            {
-                var v = ((row * size) + col);
-                if (!memory[v])
-                {
-                    distances[v] = int.MaxValue;
-                }
-            }
-        }
+        Array.Fill(distances, Distance.MaxValue);
         distances[source] = 0;
 
         while (queue.Count > 0)
@@ -130,18 +119,7 @@ public class Day18
             var source = 0;
             queue.Enqueue(source, 0);
             
-
-            for (var row = 0; row < size; row++)
-            {
-                for (var col = 0; col < size; col++)
-                {
-                    var v = ((row * size) + col);
-                    if (!memory[v])
-                    {
-                        distances[v] = int.MaxValue;
-                    }
-                }
-            }
+            Array.Fill(distances, Distance.MaxValue);
             distances[source] = 0;
 
             while (queue.Count > 0)
