@@ -116,8 +116,16 @@ public class Day18
         var memory = new bool[size * size];
         var drops = File.ReadAllLines(filename);
 
-        for (var numberOfDrops = startFrom + 1; numberOfDrops < drops.Length; numberOfDrops++)
+        var lowerBound = startFrom;
+        var upperBound = drops.Length - 1;
+        var lastWorked = startFrom;
+        var lastFailed = drops.Length;
+        var distances = new Distance[size * size];
+        var queue = new PriorityQueue<int, Distance>();
+        
+        while (true)
         {
+            var numberOfDrops = (int)(upperBound + lowerBound) / 2;
             Array.Clear(memory);
 
             foreach (var drop in drops[..numberOfDrops])
@@ -126,13 +134,11 @@ public class Day18
                 var parts = drop.Split(',');
                 memory[int.Parse(parts[1]) * size + int.Parse(parts[0])] = true;
             }
-
-            var distances = new Distance[size * size];
-            var queue = new PriorityQueue<int, Distance>();
-
+            
+            queue.Clear();
             var source = 0;
             queue.Enqueue(source, 0);
-            distances[source] = 0;
+            
 
             for (var row = 0; row < size; row++)
             {
@@ -141,28 +147,17 @@ public class Day18
                     var v = ((row * size) + col);
                     if (!memory[v])
                     {
-                        if (v != source)
-                        {
-                            distances[v] = int.MaxValue;
-                        }
-                    }
-                    else
-                    {
-                        distances[v] = -1;
+                        distances[v] = int.MaxValue;
                     }
                 }
             }
-
+            distances[source] = 0;
 
             while (queue.Count > 0)
             {
                 var u = queue.Dequeue();
-                //       if (distances[u] == int.MaxValue) break;
-
                 var col = u % size;
                 var row = (u - col) / size;
-
-                //   if (col == size-1 && row == size-1) break;
 
                 //North
                 if (row > 0 && (!memory[(row - 1) * size + col]))
@@ -218,13 +213,23 @@ public class Day18
 
 
             }
-
+            
             if (distances[^1] == int.MaxValue)
             {
-                return drops[numberOfDrops-1];
+                upperBound = numberOfDrops - 1;
+                lastFailed = Math.Min(lastFailed, numberOfDrops);
             }
-        }
+            else
+            {
+                lowerBound = numberOfDrops + 1;
+                lastWorked = Math.Max(lastWorked, numberOfDrops);
+            }
 
-        return "";
+            if (lastWorked == lastFailed - 1)
+            {
+                return drops[lastWorked];
+            }
+            
+        }
     }
 }
