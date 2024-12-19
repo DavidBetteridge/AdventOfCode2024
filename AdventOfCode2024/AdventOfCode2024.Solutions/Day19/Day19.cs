@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day19
@@ -40,13 +42,13 @@ public class Day19
         var towels = lines[0].Split(", ");
 
         var total = 0L;
-        var cache = new Dictionary<string, long>();
+        var cache = new ConcurrentDictionary<string, long>();
         var lookup = cache.GetAlternateLookup<ReadOnlySpan<char>>();
         
-        foreach (var pattern in lines[2..])
+        Parallel.ForEach(lines[2..], pattern =>
         {
-            total+=ValidCombinations(pattern);
-        }
+            Interlocked.Add(ref total, ValidCombinations(pattern));
+        });
 
         return total;
         
