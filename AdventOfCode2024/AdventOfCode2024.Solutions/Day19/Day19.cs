@@ -16,9 +16,9 @@ public class Day19
         
         return count;
         
-        bool IsValid(string patternToCheck)
+        bool IsValid(ReadOnlySpan<char> patternToCheck)
         {
-            if (patternToCheck == "") return true;
+            if (patternToCheck.Length == 0) return true;
 
             foreach (var towel in towels)
             {
