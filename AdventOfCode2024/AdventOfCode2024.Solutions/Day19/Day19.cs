@@ -40,6 +40,8 @@ public class Day19
 
         var total = 0L;
         var cache = new Dictionary<string, long>();
+        var lookup = cache.GetAlternateLookup<ReadOnlySpan<char>>();
+        
         foreach (var pattern in lines[2..])
         {
             total+=ValidCombinations(pattern);
@@ -47,11 +49,11 @@ public class Day19
 
         return total;
         
-        long ValidCombinations(string patternToCheck)
+        long ValidCombinations(ReadOnlySpan<char> patternToCheck)
         {
-            if (patternToCheck == "") return 1;
+            if (patternToCheck.Length == 0) return 1;
             
-            if (cache.TryGetValue(patternToCheck, out var combinations))
+            if (lookup.TryGetValue(patternToCheck, out var combinations))
                 return combinations;
             
             for (var towelNumber = 0; towelNumber < towels.Length; towelNumber++)
@@ -63,7 +65,7 @@ public class Day19
                 }
             }
 
-            cache[patternToCheck] = combinations;
+            lookup[patternToCheck] = combinations;
             return combinations;
         }
     }

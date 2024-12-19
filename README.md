@@ -77,15 +77,16 @@
 |             |            |          |         |         |       |         |        |           |             |
 | Day19_Part1 | Part1      |  9.056 ms | 0.1613 ms | 0.1347 ms |  1.00 |    0.02 |  93.7500 |  15.6250 |        - |  771.05 KB |        1.00 |
 |             |            |           |           |           |       |         |          |          |          |            |             |
-| Day19_Part2 | Part2      | 71.029 ms | 0.3039 ms | 0.2537 ms |  1.00 |    0.00 | 375.0000 | 125.0000 | 125.0000 | 4255.46 KB |        1.00 |
+| Day19_Part2 | Part2      | 21.03 ms | 0.061 ms | 0.057 ms |  1.00 | 656.2500 | 343.7500 | 218.7500 |   5.38 MB |        1.00 |
 
- 
+
+
 ### Run benchmarks
 
 ``` bash
 cd /Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Solutions
 dotnet run -c Release
-dotnet run -c Release --filter '*Day17BenchmarkTests*'
+dotnet run -c Release --filter '*Day19BenchmarkTests*'
 ```
 
 
