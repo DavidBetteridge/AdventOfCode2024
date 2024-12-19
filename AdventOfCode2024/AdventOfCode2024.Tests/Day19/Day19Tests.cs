@@ -27,6 +27,6 @@ public class Day19Tests
     public void Test_Part2()
     {
         var solver = new Solutions.Day19();
-        Assert.Equal(0, solver.Part2("Day19/input.txt"));
+        Assert.Equal(678536865274732, solver.Part2("Day19/input.txt"));
     }
 }
