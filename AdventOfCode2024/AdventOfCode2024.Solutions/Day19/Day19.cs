@@ -8,11 +8,12 @@ public class Day19
         var towels = lines[0].Split(", ");
 
         var count = 0;
-        foreach (var pattern in lines[2..])
+
+        Parallel.ForEach(lines[2..], pattern =>
         {
             if (IsValid(pattern))
-                count++;
-        }
+                Interlocked.Increment(ref count);
+        });
         
         return count;
         
