@@ -3,9 +3,9 @@ namespace AdventOfCode2024.Solutions;
 using Distance = int;
 public class Day20_Part2
 {
-    public int Part2(string filename, int savesAtLeast, int cheatTime)
+    public async Task<int> Part2(string filename, int savesAtLeast, int cheatTime)
     {
-        var map = File.ReadAllLines(filename);
+        var map = await File.ReadAllLinesAsync(filename);
         var height = map.Length;
         var width = map[0].Length;
         
@@ -28,15 +28,17 @@ public class Day20_Part2
             }
         }
         
+        var reverseDistances = new Distance[height * width];
+        var forwardCosts = new Distance[height * width];
+        var forwardPath = new int[height * width];
+        
+        var t1 = Task.Run(() => CostForwardMap(start));
+        var t2 = Task.Run(() => CostReverseMap(end));
+        await Task.WhenAll([t1, t2]);
 
-        var queue = new PriorityQueue<int, Distance>();
-       
-        var forward = CostForwardMap(start);
-        var forwardCosts = forward.Cost;
-        var backwards = CostReverseMap(end);
         
         var target = end.Item2 * width + end.Item1;
-        var worstCaseCost = forward.Cost[target] - savesAtLeast;
+        var worstCaseCost = forwardCosts[target] - savesAtLeast;
         
         var temp = target;
         var source = start.Item2 * width + start.Item1;
@@ -45,7 +47,7 @@ public class Day20_Part2
         {
             path.Add(temp);
             if (temp == source) break;
-            temp = forward.Path[temp];
+            temp = forwardPath[temp];
         }
 
         var goodCheats = 0;
@@ -78,7 +80,7 @@ public class Day20_Part2
                                     var newLoc = newY * width + newX;
                                     if (!walls[newLoc] && newLoc != location)
                                     {
-                                        var cost = backwards[newLoc] + forwardCosts[location] + offset;
+                                        var cost = reverseDistances[newLoc] + forwardCosts[location] + offset;
                                         if (cost <= worstCaseCost)
                                             count++;
 
@@ -97,16 +99,14 @@ public class Day20_Part2
         return goodCheats;
 
 
-        (int[] Path, Distance[] Cost) CostForwardMap((int, int) measureFrom)
+        void CostForwardMap((int, int) measureFrom)
         {
-            var distances = new Distance[height * width];
-            var prev = new int[height * width];
-            
             var measureFromIndex = measureFrom.Item2 * width + measureFrom.Item1;
+            var queue = new PriorityQueue<int, Distance>();
             queue.Enqueue(measureFromIndex,0);
             
-            Array.Fill(distances, Distance.MaxValue);
-            distances[measureFromIndex] = 0;
+            Array.Fill(forwardCosts, Distance.MaxValue);
+            forwardCosts[measureFromIndex] = 0;
 
             while (queue.Count > 0)
             {
@@ -119,11 +119,11 @@ public class Day20_Part2
                 var v = u - width;
                 if (row > 0 && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = forwardCosts[u] + 1;
+                    if (alt < forwardCosts[v])
                     {
-                        distances[v] = alt;
-                        prev[v] = u;
+                        forwardCosts[v] = alt;
+                        forwardPath[v] = u;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -133,11 +133,11 @@ public class Day20_Part2
                 v = u + width;
                 if ((row + 1) < height && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = forwardCosts[u] + 1;
+                    if (alt < forwardCosts[v])
                     {
-                        distances[v] = alt;
-                        prev[v] = u;
+                        forwardCosts[v] = alt;
+                        forwardPath[v] = u;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -147,11 +147,11 @@ public class Day20_Part2
                 v = u - 1;
                 if (col > 0 && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = forwardCosts[u] + 1;
+                    if (alt < forwardCosts[v])
                     {
-                        distances[v] = alt;
-                        prev[v] = u;
+                        forwardCosts[v] = alt;
+                        forwardPath[v] = u;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -161,32 +161,27 @@ public class Day20_Part2
                 v = u + 1;
                 if ((col + 1) < width && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = forwardCosts[u] + 1;
+                    if (alt < forwardCosts[v])
                     {
-                        distances[v] = alt;
-                        prev[v] = u;
+                        forwardCosts[v] = alt;
+                        forwardPath[v] = u;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
                 }
 
             }
-
-            return (prev, distances);
         }
         
-        Distance[] CostReverseMap((int, int) measureFrom)
+        void CostReverseMap((int, int) measureFrom)
         {
-            var distances = new Distance[height * width];
-            
-            queue.Clear();
-            
+            var queue = new PriorityQueue<int, Distance>();
             var measureFromIndex = measureFrom.Item2 * width + measureFrom.Item1;
             queue.Enqueue(measureFromIndex,0);
             
-            Array.Fill(distances, Distance.MaxValue);
-            distances[measureFromIndex] = 0;
+            Array.Fill(reverseDistances, Distance.MaxValue);
+            reverseDistances[measureFromIndex] = 0;
 
             while (queue.Count > 0)
             {
@@ -199,10 +194,10 @@ public class Day20_Part2
                 var v = u - width;
                 if (row > 0 && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = reverseDistances[u] + 1;
+                    if (alt < reverseDistances[v])
                     {
-                        distances[v] = alt;
+                        reverseDistances[v] = alt;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -212,10 +207,10 @@ public class Day20_Part2
                 v = u + width;
                 if ((row + 1) < height && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = reverseDistances[u] + 1;
+                    if (alt < reverseDistances[v])
                     {
-                        distances[v] = alt;
+                        reverseDistances[v] = alt;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -225,10 +220,10 @@ public class Day20_Part2
                 v = u - 1;
                 if (col > 0 && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = reverseDistances[u] + 1;
+                    if (alt < reverseDistances[v])
                     {
-                        distances[v] = alt;
+                        reverseDistances[v] = alt;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
@@ -238,18 +233,16 @@ public class Day20_Part2
                 v = u + 1;
                 if ((col + 1) < width && (!walls[v]))
                 {
-                    var alt = distances[u] + 1;
-                    if (alt < distances[v])
+                    var alt = reverseDistances[u] + 1;
+                    if (alt < reverseDistances[v])
                     {
-                        distances[v] = alt;
+                        reverseDistances[v] = alt;
                         queue.Remove(v, out _, out _);
                         queue.Enqueue(v, alt);
                     }
                 }
 
             }
-
-            return distances;
         }
     }
     
