@@ -1,7 +1,7 @@
 // ReSharper disable UseSymbolAlias
 namespace AdventOfCode2024.Solutions;
 using Distance = int;
-public class Day20
+public class Day20_Part1
 {
     public int Part1(string filename, int savesAtLeast)
     {
@@ -29,40 +29,34 @@ public class Day20
         }
         
        
-        var initial = CostMap(height, width, start, walls);
-        var distances = initial.Item2;
-        var route = initial.Item1;
+        var forward = CostMap(height, width, start, walls);
+        var backwards = CostMap(height, width, end, walls).Cost;
+        
         var target = end.Item2 * width + end.Item1;
-        var worstCaseCost = distances[target];
-        var goodCheats = 0;
-
-        // Walk back along the route
+        var worstCaseCost = forward.Cost[target];
+        
         var location = target;
         var source = start.Item2 * width + start.Item1;
         var tried = new HashSet<int>();
-        while (location != source)
+        var goodCheats = 0;
+        while (true)
         {
             var columnNumber = location % width;
             var rowNumber = location / width;
-            
+
             // Above
             var remove = location - width;
             if (rowNumber > 1 && walls[remove] && !tried.Contains(remove))
             {
-                var n = distances[remove - width];
-                var w = distances[remove - 1];
-                var e = distances[remove + 1];
-                if (n - distances[location] > savesAtLeast ||
-                    w - distances[location] > savesAtLeast ||
-                    e - distances[location] > savesAtLeast)
+                var n = backwards[remove - width];
+                var w = backwards[remove - 1];
+                var e = backwards[remove + 1];
+                
+                if (worstCaseCost - (n + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (w + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (e + forward.Cost[location] + 1) > savesAtLeast)
                 {
-                    walls[remove] = false;
-                    var newCosts = CostMap(height, width, start, walls);
-                    distances = newCosts.Item2;
-                    var newCost = distances[target];
-                    if (worstCaseCost - newCost >= savesAtLeast)
-                        goodCheats++;
-                    walls[remove] = true;
+                    goodCheats++;
                     tried.Add(remove);
                 }
             }
@@ -71,20 +65,14 @@ public class Day20
             remove = location + width;
             if (rowNumber < (height-2) && walls[remove] && !tried.Contains(remove))
             {
-                var s = distances[remove + width];
-                var w = distances[remove - 1];
-                var e = distances[remove + 1];
-                if (s - distances[location] > savesAtLeast ||
-                    w - distances[location] > savesAtLeast ||
-                    e - distances[location] > savesAtLeast)
+                var s = backwards[remove + width];
+                var w = backwards[remove - 1];
+                var e = backwards[remove + 1];
+                if (worstCaseCost - (s + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (w + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (e + forward.Cost[location] + 1) > savesAtLeast)
                 {
-                    walls[remove] = false;
-                    var newCosts = CostMap(height, width, start, walls);
-                    distances = newCosts.Item2;
-                    var newCost = distances[target];
-                    if (worstCaseCost - newCost >= savesAtLeast)
-                        goodCheats++;
-                    walls[remove] = true;
+                    goodCheats++;
                     tried.Add(remove);
                 }
             }
@@ -93,20 +81,14 @@ public class Day20
             remove = location - 1;
             if (columnNumber > 1 && walls[remove] && !tried.Contains(remove))
             {
-                var s = distances[remove + width];
-                var w = distances[remove - 1];
-                var n = distances[remove - width];
-                if (s - distances[location] > savesAtLeast ||
-                    w - distances[location] > savesAtLeast ||
-                    n - distances[location] > savesAtLeast)
+                var s = backwards[remove + width];
+                var w = backwards[remove - 1];
+                var n = backwards[remove - width];
+                if (worstCaseCost - (s + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (w + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (n + forward.Cost[location] + 1) > savesAtLeast)
                 {
-                    walls[remove] = false;
-                    var newCosts = CostMap(height, width, start, walls);
-                    distances = newCosts.Item2;
-                    var newCost = distances[target];
-                    if (worstCaseCost - newCost >= savesAtLeast)
-                        goodCheats++;
-                    walls[remove] = true;
+                    goodCheats++;
                     tried.Add(remove);
                 }
             }
@@ -115,32 +97,27 @@ public class Day20
             remove = location + 1;
             if (columnNumber < (width-2) && walls[remove] && !tried.Contains(remove))
             {
-                var s = distances[remove + width];
-                var e = distances[remove + 1];
-                var n = distances[remove - width];
-                if (s - distances[location] > savesAtLeast ||
-                    e - distances[location] > savesAtLeast ||
-                    n - distances[location] > savesAtLeast)
+                var s = backwards[remove + width];
+                var e = backwards[remove + 1];
+                var n = backwards[remove - width];
+                if (worstCaseCost - (s + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (n + forward.Cost[location] + 1) > savesAtLeast ||
+                    worstCaseCost - (e + forward.Cost[location] + 1) > savesAtLeast)
                 {
-                    walls[remove] = false;
-                    var newCosts = CostMap(height, width, start, walls);
-                    distances = newCosts.Item2;
-                    var newCost = distances[target];
-                    if (worstCaseCost - newCost >= savesAtLeast)
-                        goodCheats++;
-                    walls[remove] = true;
+                    goodCheats++;
                     tried.Add(remove);
                 }
             }
-            
-            location = route[location];
+
+            if (location == source) break;
+            location = forward.Path[location];
         }
 
-
         return goodCheats;
+
     }
 
-    private static (int[], Distance[]) CostMap(int height, int width, (int, int) start, bool[] walls)
+    private static (int[] Path, Distance[] Cost) CostMap(int height, int width, (int, int) start, bool[] walls)
     {
         var distances = new Distance[height * width];
         var prev = new int[height * width];
