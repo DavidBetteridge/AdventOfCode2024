@@ -46,31 +46,30 @@ public class Day20_Part2
             // Is there a non-walled cell within 20 spaces in any direction
             // which cost from the end + distance from us + plus our distance
             // is 100 less than the worst case cost.
-            var done = false;
             for (var yOffset = -cheatTime; yOffset <= cheatTime; yOffset++)
             {
                 for (var xOffset = -cheatTime; xOffset <= cheatTime; xOffset++)
                 {
-                    var newX = columnNumber + xOffset;
-                    var newY = rowNumber + yOffset;
-                    if (newX > 0 && newX < (width - 1) && newY > 0 && newY < (height - 1))
+                    var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
+                    if (offset <= cheatTime)
                     {
-                        var newLoc = newY * width + newX;
-                        if (!walls[newLoc])
+                        var newX = columnNumber + xOffset;
+                        var newY = rowNumber + yOffset;
+                        if (newX > 0 && newX < (width - 1) && newY > 0 && newY < (height - 1))
                         {
-                            var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
-                            var cost = backwards[newLoc] + forward.Cost[location] + offset;
-                            if ((worstCaseCost - cost) >= savesAtLeast)
+                            var newLoc = newY * width + newX;
+                            if (!walls[newLoc] && newLoc != location)
                             {
-                                goodCheats++;
-                                // done = true;
-                                // break;
+
+                                var cost = backwards[newLoc] + forward.Cost[location] + offset;
+                                if ((worstCaseCost - cost) >= savesAtLeast)
+                                {
+                                    goodCheats++;
+                                }
                             }
                         }
                     }
                 }
-
-             //   if (done) break;
             }
             
             if (location == source) break;
