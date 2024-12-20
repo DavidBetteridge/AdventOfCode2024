@@ -35,11 +35,21 @@ public class Day20_Part2
         var target = end.Item2 * width + end.Item1;
         var worstCaseCost = forward.Cost[target];
         
-        var location = target;
+        var temp = target;
         var source = start.Item2 * width + start.Item1;
-        var goodCheats = 0;
+        var path = new List<int>();
         while (true)
         {
+            path.Add(temp);
+            if (temp == source) break;
+            temp = forward.Path[temp];
+        }
+
+        var goodCheats = 0;
+
+        Parallel.ForEach(path, location =>
+        {
+            var count = 0;
             var columnNumber = location % width;
             var rowNumber = location / width;
 
@@ -55,27 +65,28 @@ public class Day20_Part2
                     for (var xOffset = -remainingTime; xOffset <= remainingTime; xOffset++)
                     {
                         var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
-                        var newX = columnNumber + xOffset;
-
-                        if (newX > 0 && newX < (width - 1))
+                        if (offset > 1)
                         {
-                            var newLoc = newY * width + newX;
-                            if (!walls[newLoc] && newLoc != location)
+                            var newX = columnNumber + xOffset;
+                            if (newX > 0 && newX < (width - 1))
                             {
-                                var cost = backwards[newLoc] + forward.Cost[location] + offset;
-                                if ((worstCaseCost - cost) >= savesAtLeast)
+                                var newLoc = newY * width + newX;
+                                if (!walls[newLoc] && newLoc != location)
                                 {
-                                    goodCheats++;
+                                    var cost = backwards[newLoc] + forward.Cost[location] + offset;
+                                    if ((worstCaseCost - cost) >= savesAtLeast)
+                                    {
+                                        count++;
+                                        
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            
-            if (location == source) break;
-            location = forward.Path[location];
-        }
+            Interlocked.Add(ref goodCheats, count);
+        });
 
         return goodCheats;
 
