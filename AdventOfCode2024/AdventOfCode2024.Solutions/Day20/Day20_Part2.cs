@@ -48,19 +48,20 @@ public class Day20_Part2
             // is 100 less than the worst case cost.
             for (var yOffset = -cheatTime; yOffset <= cheatTime; yOffset++)
             {
-                for (var xOffset = -cheatTime; xOffset <= cheatTime; xOffset++)
+                var newY = rowNumber + yOffset;
+                if (newY > 0 && newY < (height - 1))
                 {
-                    var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
-                    if (offset <= cheatTime)
+                    var remainingTime = cheatTime - Math.Abs(yOffset);
+                    for (var xOffset = -remainingTime; xOffset <= remainingTime; xOffset++)
                     {
+                        var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
                         var newX = columnNumber + xOffset;
-                        var newY = rowNumber + yOffset;
-                        if (newX > 0 && newX < (width - 1) && newY > 0 && newY < (height - 1))
+
+                        if (newX > 0 && newX < (width - 1))
                         {
                             var newLoc = newY * width + newX;
                             if (!walls[newLoc] && newLoc != location)
                             {
-
                                 var cost = backwards[newLoc] + forward.Cost[location] + offset;
                                 if ((worstCaseCost - cost) >= savesAtLeast)
                                 {
