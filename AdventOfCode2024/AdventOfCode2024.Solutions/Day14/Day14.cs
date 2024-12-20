@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
 namespace AdventOfCode2024.Solutions;
@@ -141,51 +142,59 @@ public class Day14
 
         const int width = 101;
         const int height = 103;
-       
-        var time = 0;
-        var board = new bool[width * height];
-        var highestEntropy = 0;
-        var bestTime = 0;
-        while (time < (width * height))
-        {
-            time++;
-            Array.Clear(board);
 
-            var i = 0;
-            for (var robot = 0; robot < robots.Length; robot++)
-            {
-                var x = mod(details[i] + (time * details[i+1]), width);
-                var y = mod(details[i+2] + (time * details[i+3]), height);
-                board[(y * width) + x] = true;
-                i += 4;
-            }
-
-            var entropy = 0;
-            for (var j = 0; j < (width * height)-1; j++)
-            {
-                if (board[j] && board[j + 1])
-                    entropy++;
-            }
-
-            if (entropy > highestEntropy)
-            {
-                highestEntropy = entropy;
-                bestTime = time;
-            }
-        }
-        return bestTime;
+        var results = new ConcurrentBag<(int, int)>();
         
-        void Display()
+        Parallel.For(0, height, row =>
         {
-            for (var row = 0; row < height; row++)
+            var highestEntropy = 0;
+            var bestTime = 0;
+
+            var board = new bool[width * height];
+            for (var col = 0; col < width; col++)
             {
-                Console.WriteLine();
-                for (var column = 0; column < width; column++)
+                Array.Clear(board);
+                var time = row * width + col;
+                var i = 0;
+                for (var robot = 0; robot < robots.Length; robot++)
                 {
-                    Console.Write(board[(row*width)+column] ? 'X' : ' ');
+                    var x = mod(details[i] + (time * details[i+1]), width);
+                    var y = mod(details[i+2] + (time * details[i+3]), height);
+                    board[(y * width) + x] = true;
+                    i += 4;
+                }
+
+                var entropy = 0;
+                for (var j = 0; j < (width * height)-1; j++)
+                {
+                    if (board[j] && board[j + 1])
+                        entropy++;
+                }
+
+                if (entropy > highestEntropy)
+                {
+                    highestEntropy = entropy;
+                    bestTime = time;
                 }
             }
+            results.Add((highestEntropy,bestTime));
+            
+        });
+
+        var he = 0;
+        var bt = 0;
+        foreach (var (e,t) in results)
+        {
+            if (e > he)
+            {
+                he = e;
+                bt = t;
+            }
         }
+        
+        return bt;
+        
+
         
     }
     
