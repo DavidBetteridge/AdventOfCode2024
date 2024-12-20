@@ -28,12 +28,15 @@ public class Day20_Part2
             }
         }
         
+
+        var queue = new PriorityQueue<int, Distance>();
        
-        var forward = CostMap(height, width, start, walls);
-        var backwards = CostMap(height, width, end, walls).Cost;
+        var forward = CostForwardMap(start);
+        var forwardCosts = forward.Cost;
+        var backwards = CostReverseMap(end);
         
         var target = end.Item2 * width + end.Item1;
-        var worstCaseCost = forward.Cost[target];
+        var worstCaseCost = forward.Cost[target] - savesAtLeast;
         
         var temp = target;
         var source = start.Item2 * width + start.Item1;
@@ -49,126 +52,205 @@ public class Day20_Part2
 
         Parallel.ForEach(path, location =>
         {
-            var count = 0;
-            var columnNumber = location % width;
-            var rowNumber = location / width;
-
-            // Is there a non-walled cell within 20 spaces in any direction
-            // which cost from the end + distance from us + plus our distance
-            // is 100 less than the worst case cost.
-            for (var yOffset = -cheatTime; yOffset <= cheatTime; yOffset++)
+            unchecked
             {
-                var newY = rowNumber + yOffset;
-                if (newY > 0 && newY < (height - 1))
+                var count = 0;
+                var columnNumber = location % width;
+                var rowNumber = location / width;
+
+                // Is there a non-walled cell within 20 spaces in any direction
+                // which cost from the end + distance from us + plus our distance
+                // is 100 less than the worst case cost.
+                for (var yOffset = -cheatTime; yOffset <= cheatTime; yOffset++)
                 {
-                    var remainingTime = cheatTime - Math.Abs(yOffset);
-                    for (var xOffset = -remainingTime; xOffset <= remainingTime; xOffset++)
+                    var newY = rowNumber + yOffset;
+                    if (newY > 0 && newY < (height - 1))
                     {
-                        var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
-                        if (offset > 1)
+                        var remainingTime = cheatTime - Math.Abs(yOffset);
+                        for (var xOffset = -remainingTime; xOffset <= remainingTime; xOffset++)
                         {
-                            var newX = columnNumber + xOffset;
-                            if (newX > 0 && newX < (width - 1))
+                            var offset = Math.Abs(yOffset) + Math.Abs(xOffset);
+                            if (offset > 1)
                             {
-                                var newLoc = newY * width + newX;
-                                if (!walls[newLoc] && newLoc != location)
+                                var newX = columnNumber + xOffset;
+                                if (newX > 0 && newX < (width - 1))
                                 {
-                                    var cost = backwards[newLoc] + forward.Cost[location] + offset;
-                                    if ((worstCaseCost - cost) >= savesAtLeast)
+                                    var newLoc = newY * width + newX;
+                                    if (!walls[newLoc] && newLoc != location)
                                     {
-                                        count++;
-                                        
+                                        var cost = backwards[newLoc] + forwardCosts[location] + offset;
+                                        if (cost <= worstCaseCost)
+                                            count++;
+
                                     }
                                 }
                             }
                         }
                     }
+
                 }
+
+                Interlocked.Add(ref goodCheats, count);
             }
-            Interlocked.Add(ref goodCheats, count);
         });
 
         return goodCheats;
 
-    }
 
-    private static (int[] Path, Distance[] Cost) CostMap(int height, int width, (int, int) start, bool[] walls)
-    {
-        var distances = new Distance[height * width];
-        var prev = new int[height * width];
-        var queue = new PriorityQueue<int, Distance>();
-        
-        var source = start.Item2 * width + start.Item1;
-        queue.Enqueue(source,0);
-
-        Array.Fill(distances, Distance.MaxValue);
-        distances[source] = 0;
-
-        while (queue.Count > 0)
+        (int[] Path, Distance[] Cost) CostForwardMap((int, int) measureFrom)
         {
-            var u = queue.Dequeue();
-
-            var col = u % width;
-            var row = u / width;
-
-            //North
-            var v = u - width;
-            if (row > 0 && (!walls[v]))
-            {
-                var alt = distances[u] + 1;
-                if (alt < distances[v])
-                {
-                    distances[v] = alt;
-                    prev[v] = u;
-                    queue.Remove(v, out _, out _);
-                    queue.Enqueue(v, alt);
-                }
-            }
+            var distances = new Distance[height * width];
+            var prev = new int[height * width];
             
-            //South
-            v = u + width;
-            if ((row + 1) < height && (!walls[v]))
+            var measureFromIndex = measureFrom.Item2 * width + measureFrom.Item1;
+            queue.Enqueue(measureFromIndex,0);
+            
+            Array.Fill(distances, Distance.MaxValue);
+            distances[measureFromIndex] = 0;
+
+            while (queue.Count > 0)
             {
-                var alt = distances[u] + 1;
-                if (alt < distances[v])
+                var u = queue.Dequeue();
+
+                var col = u % width;
+                var row = u / width;
+
+                //North
+                var v = u - width;
+                if (row > 0 && (!walls[v]))
                 {
-                    distances[v] = alt;
-                    prev[v] = u;
-                    queue.Remove(v, out _, out _);
-                    queue.Enqueue(v, alt);
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        prev[v] = u;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
                 }
+                
+                //South
+                v = u + width;
+                if ((row + 1) < height && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        prev[v] = u;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
+                //West
+                v = u - 1;
+                if (col > 0 && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        prev[v] = u;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
+                //East
+                v = u + 1;
+                if ((col + 1) < width && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        prev[v] = u;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
             }
 
-            //West
-            v = u - 1;
-            if (col > 0 && (!walls[v]))
-            {
-                var alt = distances[u] + 1;
-                if (alt < distances[v])
-                {
-                    distances[v] = alt;
-                    prev[v] = u;
-                    queue.Remove(v, out _, out _);
-                    queue.Enqueue(v, alt);
-                }
-            }
-
-            //East
-            v = u + 1;
-            if ((col + 1) < width && (!walls[v]))
-            {
-                var alt = distances[u] + 1;
-                if (alt < distances[v])
-                {
-                    distances[v] = alt;
-                    prev[v] = u;
-                    queue.Remove(v, out _, out _);
-                    queue.Enqueue(v, alt);
-                }
-            }
-
+            return (prev, distances);
         }
+        
+        Distance[] CostReverseMap((int, int) measureFrom)
+        {
+            var distances = new Distance[height * width];
+            
+            queue.Clear();
+            
+            var measureFromIndex = measureFrom.Item2 * width + measureFrom.Item1;
+            queue.Enqueue(measureFromIndex,0);
+            
+            Array.Fill(distances, Distance.MaxValue);
+            distances[measureFromIndex] = 0;
 
-        return (prev, distances);
+            while (queue.Count > 0)
+            {
+                var u = queue.Dequeue();
+
+                var col = u % width;
+                var row = u / width;
+
+                //North
+                var v = u - width;
+                if (row > 0 && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+                
+                //South
+                v = u + width;
+                if ((row + 1) < height && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
+                //West
+                v = u - 1;
+                if (col > 0 && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
+                //East
+                v = u + 1;
+                if ((col + 1) < width && (!walls[v]))
+                {
+                    var alt = distances[u] + 1;
+                    if (alt < distances[v])
+                    {
+                        distances[v] = alt;
+                        queue.Remove(v, out _, out _);
+                        queue.Enqueue(v, alt);
+                    }
+                }
+
+            }
+
+            return distances;
+        }
     }
+    
 }
