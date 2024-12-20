@@ -13,6 +13,6 @@ public class Day20Tests
     public void Test_Part1()
     {
         var solver = new Solutions.Day20();
-        Assert.Equal(0, solver.Part1("Day20/input.txt", 100));
+        Assert.Equal(1507, solver.Part1("Day20/input.txt", 100));  // 944 too low
     }
 }

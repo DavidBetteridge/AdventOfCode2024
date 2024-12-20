@@ -34,18 +34,33 @@ public class Day20
         var worstCaseCost = distances[target];
         var goodCheats = 0;
         
-        for (var rowNumber = 0; rowNumber < height; rowNumber++)
+        for (var rowNumber = 1; rowNumber < (height-1); rowNumber++)
         {
-            for (var columnNumber = 0; columnNumber < width; columnNumber++)
+            for (var columnNumber = 1; columnNumber < (width-1); columnNumber++)
             {
                 if (walls[rowNumber * width + columnNumber])
                 {
-                    walls[rowNumber * width + columnNumber] = false;
-                    distances = CostMap(height, width, start, walls);
-                    var newCost = distances[target];
-                    if (worstCaseCost - newCost >= savesAtLeast)
-                        goodCheats++;
-                    walls[rowNumber * width + columnNumber] = true;
+                    // We only remove a wall if the difference around the wall is at least 99
+                    var n = distances[(rowNumber-1) * width + columnNumber];
+                    var s = distances[(rowNumber+1) * width + columnNumber];
+                    var w = distances[rowNumber * width + (columnNumber-1)];
+                    var e = distances[rowNumber * width + (columnNumber+1)];
+
+                    var min = Math.Min(w, Math.Min(e, Math.Min(n, s)));
+                    var max = Math.Max(w == int.MaxValue ? 0 : w, 
+                        Math.Max(e == int.MaxValue ? 0 : e, 
+                            Math.Max(n == int.MaxValue ? 0 : n,
+                                s == int.MaxValue ? 0 : s)));
+                    var diff = max - min;
+                    if (diff >= 0 && diff < 10000)
+                    {
+                        walls[rowNumber * width + columnNumber] = false;
+                        distances = CostMap(height, width, start, walls);
+                        var newCost = distances[target];
+                        if (worstCaseCost - newCost >= savesAtLeast)
+                            goodCheats++;
+                        walls[rowNumber * width + columnNumber] = true;
+                    }
                 }
             }
         }
