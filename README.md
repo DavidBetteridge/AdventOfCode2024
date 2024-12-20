@@ -81,7 +81,7 @@
 |              |            |             |          |          |       |         |         |           |             |
 | Day20_Part1  | Part1      |    428.2 us |  3.54 us |  3.14 us |  1.00 | 53.7109 | 13.1836 | 442.32 KB |        1.00 |
 |              |            |             |          |          |       |         |         |           |             |
-| Day20_Part2  | Part2      | 3,933.7 us | 44.02 us | 41.18 us |  1.00 | 54.6875 | 15.6250 | 452.88 KB |        1.00 |
+| Day20_Part2  | Part2      | 3,221.7 us | 14.42 us | 12.78 us |  1.00 |    0.01 | 74.2188 | 35.1563 | 3.9063 | 589.04 KB |        1.00 |
 
 
 ### Run benchmarks
@@ -91,3 +91,4 @@ cd /Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCod
 dotnet run -c Release
 dotnet run -c Release --filter '*Day20BenchmarkTests*'
 ```
+ 

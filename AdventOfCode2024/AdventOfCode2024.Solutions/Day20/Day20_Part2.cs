@@ -1,4 +1,7 @@
 // ReSharper disable UseSymbolAlias
+
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 using Distance = int;
 public class Day20_Part2
@@ -50,7 +53,7 @@ public class Day20_Part2
             temp = forwardPath[temp];
         }
 
-        var goodCheats = 0;
+        var goodCheats = new ConcurrentBag<int>();
 
         Parallel.ForEach(path, location =>
         {
@@ -82,7 +85,7 @@ public class Day20_Part2
                                     {
                                         var cost = reverseDistances[newLoc] + forwardCosts[location] + offset;
                                         if (cost <= worstCaseCost)
-                                            count++;
+                                             count++;
 
                                     }
                                 }
@@ -91,12 +94,11 @@ public class Day20_Part2
                     }
 
                 }
-
-                Interlocked.Add(ref goodCheats, count);
+                goodCheats.Add(count);
             }
         });
 
-        return goodCheats;
+        return goodCheats.Sum();
 
 
         void CostForwardMap((int, int) measureFrom)
