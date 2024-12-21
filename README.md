@@ -82,6 +82,10 @@
 | Day20_Part1 | Part1      |   343.1 us |  6.62 us |  8.37 us |  1.00 |    0.03 | 67.3828 | 33.2031 | 4.8828 | 518.11 KB |        1.00 |
 |             |            |            |          |          |       |         |         |         |        |           |             |
 | Day20_Part2 | Part2      | 3,126.8 us | 45.98 us | 40.76 us |  1.00 |    0.02 | 62.5000 | 31.2500 | 3.9063 | 508.43 KB |        1.00 |
+|             |            |            |          |          |       |         |         |         |        |           |             |
+| Day21_Part1 | Part1      | 15.77 us | 0.130 us | 0.121 us |  1.00 | 2.8076 | 0.1221 |  23.14 KB |        1.00 |
+|             |            |          |          |          |       |        |        |           |             |
+| Day21_Part2 | Part2      | 35.54 us | 0.179 us | 0.149 us |  1.00 | 5.5542 | 0.3662 |   45.6 KB |        1.00 |
 
 
 ### Run benchmarks
@@ -89,6 +93,6 @@
 ``` bash
 cd /Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Solutions
 dotnet run -c Release
-dotnet run -c Release --filter '*Day14BenchmarkTests*'
+dotnet run -c Release --filter '*Day21BenchmarkTests*'
 ```
  
