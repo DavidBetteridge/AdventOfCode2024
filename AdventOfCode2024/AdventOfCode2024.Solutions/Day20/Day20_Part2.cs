@@ -31,18 +31,13 @@ public class Day20_Part2
             }
         }
         
-        var reverseDistances = new Distance[height * width];
         var forwardCosts = new Distance[height * width];
         var forwardPath = new int[height * width];
-        
-        var t1 = Task.Run(() => CostForwardMap(start));
-        var t2 = Task.Run(() => CostReverseMap(end));
-        await Task.WhenAll([t1, t2]);
 
+        CostForwardMap(start);
         
         var target = end.Item2 * width + end.Item1;
-        var worstCaseCost = forwardCosts[target] - savesAtLeast;
-        
+       
         var temp = target;
         var source = start.Item2 * width + start.Item1;
         var path = new List<int>();
@@ -83,10 +78,8 @@ public class Day20_Part2
                                     var newLoc = newY * width + newX;
                                     if (!walls[newLoc] && newLoc != location)
                                     {
-                                        var cost = reverseDistances[newLoc] + forwardCosts[location] + offset;
-                                        if (cost <= worstCaseCost)
+                                        if ( forwardCosts[newLoc] - (forwardCosts[location] + offset) >= savesAtLeast )
                                              count++;
-
                                     }
                                 }
                             }
@@ -176,76 +169,6 @@ public class Day20_Part2
             }
         }
         
-        void CostReverseMap((int, int) measureFrom)
-        {
-            var queue = new PriorityQueue<int, Distance>();
-            var measureFromIndex = measureFrom.Item2 * width + measureFrom.Item1;
-            queue.Enqueue(measureFromIndex,0);
-            
-            Array.Fill(reverseDistances, Distance.MaxValue);
-            reverseDistances[measureFromIndex] = 0;
-
-            while (queue.Count > 0)
-            {
-                var u = queue.Dequeue();
-
-                var col = u % width;
-                var row = u / width;
-
-                //North
-                var v = u - width;
-                if (row > 0 && (!walls[v]))
-                {
-                    var alt = reverseDistances[u] + 1;
-                    if (alt < reverseDistances[v])
-                    {
-                        reverseDistances[v] = alt;
-                        queue.Remove(v, out _, out _);
-                        queue.Enqueue(v, alt);
-                    }
-                }
-                
-                //South
-                v = u + width;
-                if ((row + 1) < height && (!walls[v]))
-                {
-                    var alt = reverseDistances[u] + 1;
-                    if (alt < reverseDistances[v])
-                    {
-                        reverseDistances[v] = alt;
-                        queue.Remove(v, out _, out _);
-                        queue.Enqueue(v, alt);
-                    }
-                }
-
-                //West
-                v = u - 1;
-                if (col > 0 && (!walls[v]))
-                {
-                    var alt = reverseDistances[u] + 1;
-                    if (alt < reverseDistances[v])
-                    {
-                        reverseDistances[v] = alt;
-                        queue.Remove(v, out _, out _);
-                        queue.Enqueue(v, alt);
-                    }
-                }
-
-                //East
-                v = u + 1;
-                if ((col + 1) < width && (!walls[v]))
-                {
-                    var alt = reverseDistances[u] + 1;
-                    if (alt < reverseDistances[v])
-                    {
-                        reverseDistances[v] = alt;
-                        queue.Remove(v, out _, out _);
-                        queue.Enqueue(v, alt);
-                    }
-                }
-
-            }
-        }
     }
     
 }
