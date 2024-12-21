@@ -1,31 +1,34 @@
 namespace AdventOfCode2024.Solutions;
 
-public class Day21
+public class Day21_Part2
 {
-    public int Part1(string filename)
+    public long Part2(string filename, int numberOfRobots)
     {
         var codes = File.ReadAllLines(filename);
 
-        var total = 0;
+        var cache = new Dictionary<string, long>[numberOfRobots+1];
+        for (int i = 0; i <= numberOfRobots; i++)
+            cache[i] = new Dictionary<string, long>();
+        
+        var total = 0L;
         foreach (var code in codes)
-            total += SolveCode(code);
+            total += SolveCode(code, numberOfRobots, cache);
 
         return total;
     }
 
-    private int SolveCode(string code)
+    private long SolveCode(string code, int numberOfRobots, Dictionary<string, long>[] cache)
     {
         var numericCodes = new List<string>();
         SolveNumericalCode(code, "", 11, numericCodes);
 
-        var directionalCodes = new HashSet<string>();
+        // Are all the possibilities, we want the cheapest one
+        var shortestSequence = long.MaxValue;
         foreach (var numericCode in numericCodes)
-            SolveDirectionalCode(numericCode, "", 3, directionalCodes);
-
-        var shortestSequence = int.MaxValue;
-        foreach (var dc in directionalCodes)
-            LengthOfShortestSequence(dc, "", 3, ref shortestSequence);
-
+        {
+            var length = Cost(numericCode, numberOfRobots, cache);
+            shortestSequence = Math.Min(shortestSequence, length);
+        }
 
         var numericPart = 0;
         for (var i = 0; i < code.Length; i++)
@@ -37,7 +40,42 @@ public class Day21
 
         return shortestSequence * numericPart;
     }
+    
+    private long Cost(string numericCode, int robotNumber, Dictionary<string, long>[] cache)
+    {
+        if (cache[robotNumber].TryGetValue(numericCode, out var c))
+            return c;
+        
+        if (robotNumber == 1) return numericCode.Length;
 
+        var cost = 0L;
+        var currentlyAt = 3;
+        for (var i = 0; i < numericCode.Length; i++)
+        {
+            var moveTo = numericCode[i] switch
+            {
+                '^' => 4,
+                'A' => 3,
+                '<' => 2,
+                'V' => 1,
+                '>' => 0,
+                _ => 5
+            };
+            
+            var map = mapping[currentlyAt][moveTo];
+            var lowestCost = long.MaxValue;
+            foreach (var possible in map)
+            {
+                lowestCost = Math.Min(lowestCost, Cost(possible, robotNumber-1, cache));
+            }
+            cost += lowestCost;
+            currentlyAt = moveTo;
+        }
+
+        cache[robotNumber][numericCode] = cost;
+
+        return cost;
+    }
 
     private List<string>[][] mapping = new[]
     {
