@@ -6,10 +6,10 @@ public class Day21_Part2
     {
         var codes = File.ReadAllLines(filename);
 
-        var cache = new Dictionary<string, long>[numberOfRobots+1];
-        for (int i = 0; i <= numberOfRobots; i++)
+        var cache = new Dictionary<string, long>[numberOfRobots + 1];
+        for (var i = 0; i <= numberOfRobots; i++)
             cache[i] = new Dictionary<string, long>();
-        
+
         var total = 0L;
         foreach (var code in codes)
             total += SolveCode(code, numberOfRobots, cache);
@@ -40,12 +40,12 @@ public class Day21_Part2
 
         return shortestSequence * numericPart;
     }
-    
+
     private long Cost(string numericCode, int robotNumber, Dictionary<string, long>[] cache)
     {
         if (cache[robotNumber].TryGetValue(numericCode, out var c))
             return c;
-        
+
         if (robotNumber == 1) return numericCode.Length;
 
         var cost = 0L;
@@ -61,13 +61,14 @@ public class Day21_Part2
                 '>' => 0,
                 _ => 5
             };
-            
-            var map = mapping[currentlyAt][moveTo];
+
+            var map = _mapping[currentlyAt][moveTo];
             var lowestCost = long.MaxValue;
             foreach (var possible in map)
             {
-                lowestCost = Math.Min(lowestCost, Cost(possible, robotNumber-1, cache));
+                lowestCost = Math.Min(lowestCost, Cost(possible, robotNumber - 1, cache));
             }
+
             cost += lowestCost;
             currentlyAt = moveTo;
         }
@@ -77,114 +78,53 @@ public class Day21_Part2
         return cost;
     }
 
-    private List<string>[][] mapping = new[]
-    {
+    private readonly string[][][] _mapping =
+    [
         //0
-        new[]
-        {
-            new List<string> { "A" },
-            new List<string> { "<A" },
-            new List<string> { "<<A" },
-            new List<string> { "^A" },
-            new List<string> { "^<A", "<^A" }
-        },
+        [
+            ["A"],
+            ["<A"],
+            ["<<A"],
+            ["^A"],
+            ["^<A", "<^A"]
+        ],
 
         //1
-        new[]
-        {
-            new List<string> { ">A" },
-            new List<string> { "A" },
-            new List<string> { "<A" },
-            new List<string> { ">^A", "^>A" },
-            new List<string> { "^A" }
-        },
+        [
+            [">A"],
+            ["A"],
+            ["<A"],
+            [">^A", "^>A"],
+            ["^A"]
+        ],
 
         //2
-        new[]
-        {
-            new List<string> { ">>A" },
-            new List<string> { ">A" },
-            new List<string> { "A" },
-            new List<string> { ">>^A", ">^>A" },
-            new List<string> { ">^A" }
-        },
+        [
+            [">>A"],
+            [">A"],
+            ["A"],
+            [">>^A", ">^>A"],
+            [">^A"]
+        ],
 
         //3
-        new[]
-        {
-            new List<string> { "VA" },
-            new List<string> { "V<A", "<VA" },
-            new List<string> { "<V<A", "V<<A" },
-            new List<string> { "A" },
-            new List<string> { "<A" }
-        },
+        [
+            ["VA"],
+            ["V<A", "<VA"],
+            ["<V<A", "V<<A"],
+            ["A"],
+            ["<A"]
+        ],
 
         //4
-        new[]
-        {
-            new List<string> { "V>A", ">VA" },
-            new List<string> { "VA" },
-            new List<string> { "V<A" },
-            new List<string> { ">A" },
-            new List<string> { "A" }
-        }
-    };
-
-    private void LengthOfShortestSequence(string code, string path, int location,
-        ref int shortestPathLength)
-    {
-        if (code == "")
-        {
-            shortestPathLength = path.Length;
-            return;
-        }
-
-        if (path.Length >= shortestPathLength)
-            return;
-
-        var symbol = code[0] switch
-        {
-            '^' => 4,
-            'A' => 3,
-            '<' => 2,
-            'V' => 1,
-            '>' => 0,
-            _ => 5
-        };
-
-        var map = mapping[location][symbol];
-        foreach (var possible in map)
-        {
-            LengthOfShortestSequence(code[1..], path + possible, symbol, ref shortestPathLength);
-        }
-    }
-
-
-    private void SolveDirectionalCode(string code, string path, int location, HashSet<string> paths)
-    {
-        if (code == "")
-        {
-            paths.Add(path);
-            return;
-        }
-
-        var symbol = code[0] switch
-        {
-            '^' => 4,
-            'A' => 3,
-            '<' => 2,
-            'V' => 1,
-            '>' => 0,
-            _ => 5
-        };
-
-        var map = mapping[location][symbol];
-        foreach (var possible in map)
-        {
-            SolveDirectionalCode(code[1..], path + possible, symbol, paths);
-        }
-    }
-
+        [
+            ["V>A", ">VA"],
+            ["VA"],
+            ["V<A"],
+            [">A"],
+            ["A"]
+        ]
+    ];
 
     private void SolveNumericalCode(string code, string path, int location, List<string> paths)
     {
@@ -200,7 +140,7 @@ public class Day21_Part2
         //  *  1(6)  2(7) 3(8)
         //  *   (9)  0(10). A(11)
         //  */
-        
+
         var symbol = code[0] switch
         {
             'A' => 11,
@@ -217,7 +157,7 @@ public class Day21_Part2
             _ => 9
         };
 
-        var map = digitMapping[location][symbol];
+        var map = _digitMapping[location][symbol];
         foreach (var possible in map)
         {
             SolveNumericalCode(code[1..], path + possible, symbol, paths);
@@ -225,201 +165,187 @@ public class Day21_Part2
     }
 
 
-    private string[][][] digitMapping = new[]
-    {
-// From 0
-new[]
-{
-  new string[] { "A", },   // To: 0
-  new string[] { ">A", },   // To: 1
-  new string[] { ">>A", },   // To: 2
-  new string[] { "VA", },   // To: 3
-  new string[] { "V>A", ">VA", },   // To: 4
-  new string[] { "V>>A", ">V>A", ">>VA", },   // To: 5
-  new string[] { "VVA", },   // To: 6
-  new string[] { "VV>A", "V>VA", ">VVA", },   // To: 7
-  new string[] { "VV>>A", "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VV>VA", "V>VVA", ">VVVA", },   // To: 10
-  new string[] { "VV>V>A", "VV>>VA", "V>VV>A", "V>V>VA", "V>>VVA", ">VVV>A", ">VV>VA", ">V>VVA", ">>VVVA", },   // To: 11
-},
+    private readonly string[][][] _digitMapping =
+    [
+        // From 0
+        [
+            ["A"], // To: 0
+            [">A"], // To: 1
+            [">>A"], // To: 2
+            ["VA"], // To: 3
+            ["V>A", ">VA"], // To: 4
+            ["V>>A", ">V>A", ">>VA"], // To: 5
+            ["VVA"], // To: 6
+            ["VV>A", "V>VA", ">VVA"], // To: 7
+            ["VV>>A", "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA"], // To: 8
+            [], // To: 9
+            ["VV>VA", "V>VVA", ">VVVA"], // To: 10
+            ["VV>V>A", "VV>>VA", "V>VV>A", "V>V>VA", "V>>VVA", ">VVV>A", ">VV>VA", ">V>VVA", ">>VVVA"] // To: 11
+        ],
 // From 1
-new[]
-{
-  new string[] { "<A", },   // To: 0
-  new string[] { "A", },   // To: 1
-  new string[] { ">A", },   // To: 2
-  new string[] { "V<A", "<VA", },   // To: 3
-  new string[] { "VA", },   // To: 4
-  new string[] { "V>A", ">VA", },   // To: 5
-  new string[] { "VV<A", "V<VA", "<VVA", },   // To: 6
-  new string[] { "VVA", },   // To: 7
-  new string[] { "VV>A", "V>VA", ">VVA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VVVA", },   // To: 10
-  new string[] { "VVV>A", "VV>VA", "V>VVA", ">VVVA", },   // To: 11
-},
+        [
+            ["<A"], // To: 0
+            ["A"], // To: 1
+            [">A"], // To: 2
+            ["V<A", "<VA"], // To: 3
+            ["VA"], // To: 4
+            ["V>A", ">VA"], // To: 5
+            ["VV<A", "V<VA", "<VVA"], // To: 6
+            ["VVA"], // To: 7
+            ["VV>A", "V>VA", ">VVA"], // To: 8
+            [], // To: 9
+            ["VVVA"], // To: 10
+            ["VVV>A", "VV>VA", "V>VVA", ">VVVA"] // To: 11
+        ],
 // From 2
-new[]
-{
-  new string[] { "<<A", },   // To: 0
-  new string[] { "<A", },   // To: 1
-  new string[] { "A", },   // To: 2
-  new string[] { "V<<A", "<V<A", "<<VA", },   // To: 3
-  new string[] { "V<A", "<VA", },   // To: 4
-  new string[] { "VA", },   // To: 5
-  new string[] { "VV<<A", "V<V<A", "V<<VA", "<VV<A", "<V<VA", "<<VVA", },   // To: 6
-  new string[] { "VV<A", "V<VA", "<VVA", },   // To: 7
-  new string[] { "VVA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VVV<A", "VV<VA", "V<VVA", "<VVVA", },   // To: 10
-  new string[] { "VVVA", },   // To: 11
-},
+        [
+            ["<<A"], // To: 0
+            ["<A"], // To: 1
+            ["A"], // To: 2
+            ["V<<A", "<V<A", "<<VA"], // To: 3
+            ["V<A", "<VA"], // To: 4
+            ["VA"], // To: 5
+            ["VV<<A", "V<V<A", "V<<VA", "<VV<A", "<V<VA", "<<VVA"], // To: 6
+            ["VV<A", "V<VA", "<VVA"], // To: 7
+            ["VVA"], // To: 8
+            [], // To: 9
+            ["VVV<A", "VV<VA", "V<VVA", "<VVVA"], // To: 10
+            ["VVVA"] // To: 11
+        ],
 // From 3
-new[]
-{
-  new string[] { "^A", },   // To: 0
-  new string[] { "^>A", ">^A", },   // To: 1
-  new string[] { "^>>A", ">^>A", ">>^A", },   // To: 2
-  new string[] { "A", },   // To: 3
-  new string[] { ">A", },   // To: 4
-  new string[] { ">>A", },   // To: 5
-  new string[] { "VA", },   // To: 6
-  new string[] { "V>A", ">VA", },   // To: 7
-  new string[] { "V>>A", ">V>A", ">>VA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "V>VA", ">VVA", },   // To: 10
-  new string[] { "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA", },   // To: 11
-},
+        [
+            ["^A"], // To: 0
+            ["^>A", ">^A"], // To: 1
+            ["^>>A", ">^>A", ">>^A"], // To: 2
+            ["A"], // To: 3
+            [">A"], // To: 4
+            [">>A"], // To: 5
+            ["VA"], // To: 6
+            ["V>A", ">VA"], // To: 7
+            ["V>>A", ">V>A", ">>VA"], // To: 8
+            [], // To: 9
+            ["V>VA", ">VVA"], // To: 10
+            ["V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA"] // To: 11
+        ],
 // From 4
-new[]
-{
-  new string[] { "^<A", "<^A", },   // To: 0
-  new string[] { "^A", },   // To: 1
-  new string[] { "^>A", ">^A", },   // To: 2
-  new string[] { "<A", },   // To: 3
-  new string[] { "A", },   // To: 4
-  new string[] { ">A", },   // To: 5
-  new string[] { "V<A", "<VA", },   // To: 6
-  new string[] { "VA", },   // To: 7
-  new string[] { "V>A", ">VA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VVA", },   // To: 10
-  new string[] { "VV>A", "V>VA", ">VVA", },   // To: 11
-},
+        [
+            ["^<A", "<^A"], // To: 0
+            ["^A"], // To: 1
+            ["^>A", ">^A"], // To: 2
+            ["<A"], // To: 3
+            ["A"], // To: 4
+            [">A"], // To: 5
+            ["V<A", "<VA"], // To: 6
+            ["VA"], // To: 7
+            ["V>A", ">VA"], // To: 8
+            [], // To: 9
+            ["VVA"], // To: 10
+            ["VV>A", "V>VA", ">VVA"] // To: 11
+        ],
 // From 5
-new[]
-{
-  new string[] { "^<<A", "<^<A", "<<^A", },   // To: 0
-  new string[] { "^<A", "<^A", },   // To: 1
-  new string[] { "^A", },   // To: 2
-  new string[] { "<<A", },   // To: 3
-  new string[] { "<A", },   // To: 4
-  new string[] { "A", },   // To: 5
-  new string[] { "V<<A", "<V<A", "<<VA", },   // To: 6
-  new string[] { "V<A", "<VA", },   // To: 7
-  new string[] { "VA", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VV<A", "V<VA", "<VVA", },   // To: 10
-  new string[] { "VVA", },   // To: 11
-},
+        [
+            ["^<<A", "<^<A", "<<^A"], // To: 0
+            ["^<A", "<^A"], // To: 1
+            ["^A"], // To: 2
+            ["<<A"], // To: 3
+            ["<A"], // To: 4
+            ["A"], // To: 5
+            ["V<<A", "<V<A", "<<VA"], // To: 6
+            ["V<A", "<VA"], // To: 7
+            ["VA"], // To: 8
+            [], // To: 9
+            ["VV<A", "V<VA", "<VVA"], // To: 10
+            ["VVA"] // To: 11
+        ],
 // From 6
-new[]
-{
-  new string[] { "^^A", },   // To: 0
-  new string[] { "^^>A", "^>^A", ">^^A", },   // To: 1
-  new string[] { "^^>>A", "^>^>A", "^>>^A", ">^^>A", ">^>^A", ">>^^A", },   // To: 2
-  new string[] { "^A", },   // To: 3
-  new string[] { "^>A", ">^A", },   // To: 4
-  new string[] { "^>>A", ">^>A", ">>^A", },   // To: 5
-  new string[] { "A", },   // To: 6
-  new string[] { ">A", },   // To: 7
-  new string[] { ">>A", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { ">VA", },   // To: 10
-  new string[] { ">V>A", ">>VA", },   // To: 11
-},
+        [
+            ["^^A"], // To: 0
+            ["^^>A", "^>^A", ">^^A"], // To: 1
+            ["^^>>A", "^>^>A", "^>>^A", ">^^>A", ">^>^A", ">>^^A"], // To: 2
+            ["^A"], // To: 3
+            ["^>A", ">^A"], // To: 4
+            ["^>>A", ">^>A", ">>^A"], // To: 5
+            ["A"], // To: 6
+            [">A"], // To: 7
+            [">>A"], // To: 8
+            [], // To: 9
+            [">VA"], // To: 10
+            [">V>A", ">>VA"] // To: 11
+        ],
 // From 7
-new[]
-{
-  new string[] { "^^<A", "^<^A", "<^^A", },   // To: 0
-  new string[] { "^^A", },   // To: 1
-  new string[] { "^^>A", "^>^A", ">^^A", },   // To: 2
-  new string[] { "^<A", "<^A", },   // To: 3
-  new string[] { "^A", },   // To: 4
-  new string[] { "^>A", ">^A", },   // To: 5
-  new string[] { "<A", },   // To: 6
-  new string[] { "A", },   // To: 7
-  new string[] { ">A", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "VA", },   // To: 10
-  new string[] { "V>A", ">VA", },   // To: 11
-},
+        [
+            ["^^<A", "^<^A", "<^^A"], // To: 0
+            ["^^A"], // To: 1
+            ["^^>A", "^>^A", ">^^A"], // To: 2
+            ["^<A", "<^A"], // To: 3
+            ["^A"], // To: 4
+            ["^>A", ">^A"], // To: 5
+            ["<A"], // To: 6
+            ["A"], // To: 7
+            [">A"], // To: 8
+            [], // To: 9
+            ["VA"], // To: 10
+            ["V>A", ">VA"] // To: 11
+        ],
 // From 8
-new[]
-{
-  new string[] { "^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A", "<<^^A", },   // To: 0
-  new string[] { "^^<A", "^<^A", "<^^A", },   // To: 1
-  new string[] { "^^A", },   // To: 2
-  new string[] { "^<<A", "<^<A", "<<^A", },   // To: 3
-  new string[] { "^<A", "<^A", },   // To: 4
-  new string[] { "^A", },   // To: 5
-  new string[] { "<<A", },   // To: 6
-  new string[] { "<A", },   // To: 7
-  new string[] { "A", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "V<A", "<VA", },   // To: 10
-  new string[] { "VA", },   // To: 11
-},
+        [
+            ["^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A", "<<^^A"], // To: 0
+            ["^^<A", "^<^A", "<^^A"], // To: 1
+            ["^^A"], // To: 2
+            ["^<<A", "<^<A", "<<^A"], // To: 3
+            ["^<A", "<^A"], // To: 4
+            ["^A"], // To: 5
+            ["<<A"], // To: 6
+            ["<A"], // To: 7
+            ["A"], // To: 8
+            [], // To: 9
+            ["V<A", "<VA"], // To: 10
+            ["VA"] // To: 11
+        ],
 // From 9
-new[]
-{
-  new string[] { },   // To: 0
-  new string[] { },   // To: 1
-  new string[] { },   // To: 2
-  new string[] { },   // To: 3
-  new string[] { },   // To: 4
-  new string[] { },   // To: 5
-  new string[] { },   // To: 6
-  new string[] { },   // To: 7
-  new string[] { },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { },   // To: 10
-  new string[] { },   // To: 11
-},
+        [
+            [], // To: 0
+            [], // To: 1
+            [], // To: 2
+            [], // To: 3
+            [], // To: 4
+            [], // To: 5
+            [], // To: 6
+            [], // To: 7
+            [], // To: 8
+            [], // To: 9
+            [], // To: 10
+            [] // To: 11
+        ],
 // From 10
-new[]
-{
-  new string[] { "^^^<A", "^^<^A", "^<^^A", },   // To: 0
-  new string[] { "^^^A", },   // To: 1
-  new string[] { "^^^>A", "^^>^A", "^>^^A", ">^^^A", },   // To: 2
-  new string[] { "^^<A", "^<^A", },   // To: 3
-  new string[] { "^^A", },   // To: 4
-  new string[] { "^^>A", "^>^A", ">^^A", },   // To: 5
-  new string[] { "^<A", },   // To: 6
-  new string[] { "^A", },   // To: 7
-  new string[] { "^>A", ">^A", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "A", },   // To: 10
-  new string[] { ">A", },   // To: 11
-},
+        [
+            ["^^^<A", "^^<^A", "^<^^A"], // To: 0
+            ["^^^A"], // To: 1
+            ["^^^>A", "^^>^A", "^>^^A", ">^^^A"], // To: 2
+            ["^^<A", "^<^A"], // To: 3
+            ["^^A"], // To: 4
+            ["^^>A", "^>^A", ">^^A"], // To: 5
+            ["^<A"], // To: 6
+            ["^A"], // To: 7
+            ["^>A", ">^A"], // To: 8
+            [], // To: 9
+            ["A"], // To: 10
+            [">A"] // To: 11
+        ],
 // From 11
-new[]
-{
-  new string[] { "^^^<<A", "^^<^<A", "^^<<^A", "^<^^<A", "^<^<^A", "^<<^^A", "<^^^<A", "<^^<^A", "<^<^^A", },   // To: 0
-  new string[] { "^^^<A", "^^<^A", "^<^^A", "<^^^A", },   // To: 1
-  new string[] { "^^^A", },   // To: 2
-  new string[] { "^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A", },   // To: 3
-  new string[] { "^^<A", "^<^A", "<^^A", },   // To: 4
-  new string[] { "^^A", },   // To: 5
-  new string[] { "^<<A", "<^<A", },   // To: 6
-  new string[] { "^<A", "<^A", },   // To: 7
-  new string[] { "^A", },   // To: 8
-  new string[] { },   // To: 9
-  new string[] { "<A", },   // To: 10
-  new string[] { "A", },   // To: 11
-},
-
-
-    };
+        [
+            ["^^^<<A", "^^<^<A", "^^<<^A", "^<^^<A", "^<^<^A", "^<<^^A", "<^^^<A", "<^^<^A", "<^<^^A"], // To: 0
+            ["^^^<A", "^^<^A", "^<^^A", "<^^^A"], // To: 1
+            ["^^^A"], // To: 2
+            ["^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A"], // To: 3
+            ["^^<A", "^<^A", "<^^A"], // To: 4
+            ["^^A"], // To: 5
+            ["^<<A", "<^<A"], // To: 6
+            ["^<A", "<^A"], // To: 7
+            ["^A"], // To: 8
+            [], // To: 9
+            ["<A"], // To: 10
+            ["A"] // To: 11
+        ]
+    ];
 }
