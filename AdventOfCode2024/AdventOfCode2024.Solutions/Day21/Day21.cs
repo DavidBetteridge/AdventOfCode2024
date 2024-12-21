@@ -22,10 +22,9 @@ public class Day21
         foreach (var numericCode in numericCodes)
             SolveDirectionalCode(numericCode, "", 3, directionalCodes);
 
-        var solution = new HashSet<string>();
         var shortestSequence = int.MaxValue;
         foreach (var dc in directionalCodes)
-            LengthOfShortestSequence(dc, "", 3, solution, ref shortestSequence);
+            LengthOfShortestSequence(dc, "", 3, ref shortestSequence);
 
 
         var numericPart = 0;
@@ -68,8 +67,8 @@ public class Day21
             new List<string> { ">>A" },
             new List<string> { ">A" },
             new List<string> { "A" },
-            new List<string> { ">>^A", ">^>A", "^>>A" },
-            new List<string> { ">^A", "^>A" }
+            new List<string> { ">>^A", ">^>A" },
+            new List<string> { ">^A" }
         },
 
         //3
@@ -77,7 +76,7 @@ public class Day21
         {
             new List<string> { "VA" },
             new List<string> { "V<A", "<VA" },
-            new List<string> { "<<VA", "<V<A", "V<<A" },
+            new List<string> { "<V<A", "V<<A" },
             new List<string> { "A" },
             new List<string> { "<A" }
         },
@@ -87,18 +86,17 @@ public class Day21
         {
             new List<string> { "V>A", ">VA" },
             new List<string> { "VA" },
-            new List<string> { "V<A", "<VA" },
+            new List<string> { "V<A" },
             new List<string> { ">A" },
             new List<string> { "A" }
         }
     };
 
-    private void LengthOfShortestSequence(string code, string path, int location, HashSet<string> paths,
+    private void LengthOfShortestSequence(string code, string path, int location,
         ref int shortestPathLength)
     {
         if (code == "")
         {
-            paths.Add(path);
             shortestPathLength = path.Length;
             return;
         }
@@ -119,7 +117,7 @@ public class Day21
         var map = mapping[location][symbol];
         foreach (var possible in map)
         {
-            LengthOfShortestSequence(code[1..], path + possible, symbol, paths, ref shortestPathLength);
+            LengthOfShortestSequence(code[1..], path + possible, symbol, ref shortestPathLength);
         }
     }
 
@@ -191,7 +189,7 @@ public class Day21
 
     private List<string>[][] digitMapping = new[]
     {
-      // From 0
+// From 0
 new[]
 {
   new List<string> { "A", },   // To: 0
@@ -203,9 +201,9 @@ new[]
   new List<string> { "VVA", },   // To: 6
   new List<string> { "VV>A", "V>VA", ">VVA", },   // To: 7
   new List<string> { "VV>>A", "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA", },   // To: 8
-  new List<string> { "VVVA", },   // To: 9
-  new List<string> { "VVV>A", "VV>VA", "V>VVA", ">VVVA", },   // To: 10
-  new List<string> { "VVV>>A", "VV>V>A", "VV>>VA", "V>VV>A", "V>V>VA", "V>>VVA", ">VVV>A", ">VV>VA", ">V>VVA", ">>VVVA", },   // To: 11
+  new List<string> { },   // To: 9
+  new List<string> { "VV>VA", "V>VVA", ">VVVA", },   // To: 10
+  new List<string> { "VV>V>A", "VV>>VA", "V>VV>A", "V>V>VA", "V>>VVA", ">VVV>A", ">VV>VA", ">V>VVA", ">>VVVA", },   // To: 11
 },
 // From 1
 new[]
@@ -219,7 +217,7 @@ new[]
   new List<string> { "VV<A", "V<VA", "<VVA", },   // To: 6
   new List<string> { "VVA", },   // To: 7
   new List<string> { "VV>A", "V>VA", ">VVA", },   // To: 8
-  new List<string> { "VVV<A", "VV<VA", "V<VVA", "<VVVA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "VVVA", },   // To: 10
   new List<string> { "VVV>A", "VV>VA", "V>VVA", ">VVVA", },   // To: 11
 },
@@ -235,7 +233,7 @@ new[]
   new List<string> { "VV<<A", "V<V<A", "V<<VA", "<VV<A", "<V<VA", "<<VVA", },   // To: 6
   new List<string> { "VV<A", "V<VA", "<VVA", },   // To: 7
   new List<string> { "VVA", },   // To: 8
-  new List<string> { "VVV<<A", "VV<V<A", "VV<<VA", "V<VV<A", "V<V<VA", "V<<VVA", "<VVV<A", "<VV<VA", "<V<VVA", "<<VVVA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "VVV<A", "VV<VA", "V<VVA", "<VVVA", },   // To: 10
   new List<string> { "VVVA", },   // To: 11
 },
@@ -251,9 +249,9 @@ new[]
   new List<string> { "VA", },   // To: 6
   new List<string> { "V>A", ">VA", },   // To: 7
   new List<string> { "V>>A", ">V>A", ">>VA", },   // To: 8
-  new List<string> { "VVA", },   // To: 9
-  new List<string> { "VV>A", "V>VA", ">VVA", },   // To: 10
-  new List<string> { "VV>>A", "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA", },   // To: 11
+  new List<string> { },   // To: 9
+  new List<string> { "V>VA", ">VVA", },   // To: 10
+  new List<string> { "V>V>A", "V>>VA", ">VV>A", ">V>VA", ">>VVA", },   // To: 11
 },
 // From 4
 new[]
@@ -267,7 +265,7 @@ new[]
   new List<string> { "V<A", "<VA", },   // To: 6
   new List<string> { "VA", },   // To: 7
   new List<string> { "V>A", ">VA", },   // To: 8
-  new List<string> { "VV<A", "V<VA", "<VVA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "VVA", },   // To: 10
   new List<string> { "VV>A", "V>VA", ">VVA", },   // To: 11
 },
@@ -283,7 +281,7 @@ new[]
   new List<string> { "V<<A", "<V<A", "<<VA", },   // To: 6
   new List<string> { "V<A", "<VA", },   // To: 7
   new List<string> { "VA", },   // To: 8
-  new List<string> { "VV<<A", "V<V<A", "V<<VA", "<VV<A", "<V<VA", "<<VVA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "VV<A", "V<VA", "<VVA", },   // To: 10
   new List<string> { "VVA", },   // To: 11
 },
@@ -299,9 +297,9 @@ new[]
   new List<string> { "A", },   // To: 6
   new List<string> { ">A", },   // To: 7
   new List<string> { ">>A", },   // To: 8
-  new List<string> { "VA", },   // To: 9
-  new List<string> { "V>A", ">VA", },   // To: 10
-  new List<string> { "V>>A", ">V>A", ">>VA", },   // To: 11
+  new List<string> { },   // To: 9
+  new List<string> { ">VA", },   // To: 10
+  new List<string> { ">V>A", ">>VA", },   // To: 11
 },
 // From 7
 new[]
@@ -315,7 +313,7 @@ new[]
   new List<string> { "<A", },   // To: 6
   new List<string> { "A", },   // To: 7
   new List<string> { ">A", },   // To: 8
-  new List<string> { "V<A", "<VA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "VA", },   // To: 10
   new List<string> { "V>A", ">VA", },   // To: 11
 },
@@ -331,58 +329,59 @@ new[]
   new List<string> { "<<A", },   // To: 6
   new List<string> { "<A", },   // To: 7
   new List<string> { "A", },   // To: 8
-  new List<string> { "V<<A", "<V<A", "<<VA", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "V<A", "<VA", },   // To: 10
   new List<string> { "VA", },   // To: 11
 },
 // From 9
 new[]
 {
-  new List<string> { "^^^A", },   // To: 0
-  new List<string> { "^^^>A", "^^>^A", "^>^^A", ">^^^A", },   // To: 1
-  new List<string> { "^^^>>A", "^^>^>A", "^^>>^A", "^>^^>A", "^>^>^A", "^>>^^A", ">^^^>A", ">^^>^A", ">^>^^A", ">>^^^A", },   // To: 2
-  new List<string> { "^^A", },   // To: 3
-  new List<string> { "^^>A", "^>^A", ">^^A", },   // To: 4
-  new List<string> { "^^>>A", "^>^>A", "^>>^A", ">^^>A", ">^>^A", ">>^^A", },   // To: 5
-  new List<string> { "^A", },   // To: 6
-  new List<string> { "^>A", ">^A", },   // To: 7
-  new List<string> { "^>>A", ">^>A", ">>^A", },   // To: 8
-  new List<string> { "A", },   // To: 9
-  new List<string> { ">A", },   // To: 10
-  new List<string> { ">>A", },   // To: 11
+  new List<string> { },   // To: 0
+  new List<string> { },   // To: 1
+  new List<string> { },   // To: 2
+  new List<string> { },   // To: 3
+  new List<string> { },   // To: 4
+  new List<string> { },   // To: 5
+  new List<string> { },   // To: 6
+  new List<string> { },   // To: 7
+  new List<string> { },   // To: 8
+  new List<string> { },   // To: 9
+  new List<string> { },   // To: 10
+  new List<string> { },   // To: 11
 },
 // From 10
 new[]
 {
-  new List<string> { "^^^<A", "^^<^A", "^<^^A", "<^^^A", },   // To: 0
+  new List<string> { "^^^<A", "^^<^A", "^<^^A", },   // To: 0
   new List<string> { "^^^A", },   // To: 1
   new List<string> { "^^^>A", "^^>^A", "^>^^A", ">^^^A", },   // To: 2
-  new List<string> { "^^<A", "^<^A", "<^^A", },   // To: 3
+  new List<string> { "^^<A", "^<^A", },   // To: 3
   new List<string> { "^^A", },   // To: 4
   new List<string> { "^^>A", "^>^A", ">^^A", },   // To: 5
-  new List<string> { "^<A", "<^A", },   // To: 6
+  new List<string> { "^<A", },   // To: 6
   new List<string> { "^A", },   // To: 7
   new List<string> { "^>A", ">^A", },   // To: 8
-  new List<string> { "<A", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "A", },   // To: 10
   new List<string> { ">A", },   // To: 11
 },
 // From 11
 new[]
 {
-  new List<string> { "^^^<<A", "^^<^<A", "^^<<^A", "^<^^<A", "^<^<^A", "^<<^^A", "<^^^<A", "<^^<^A", "<^<^^A", "<<^^^A", },   // To: 0
+  new List<string> { "^^^<<A", "^^<^<A", "^^<<^A", "^<^^<A", "^<^<^A", "^<<^^A", "<^^^<A", "<^^<^A", "<^<^^A", },   // To: 0
   new List<string> { "^^^<A", "^^<^A", "^<^^A", "<^^^A", },   // To: 1
   new List<string> { "^^^A", },   // To: 2
-  new List<string> { "^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A", "<<^^A", },   // To: 3
+  new List<string> { "^^<<A", "^<^<A", "^<<^A", "<^^<A", "<^<^A", },   // To: 3
   new List<string> { "^^<A", "^<^A", "<^^A", },   // To: 4
   new List<string> { "^^A", },   // To: 5
-  new List<string> { "^<<A", "<^<A", "<<^A", },   // To: 6
+  new List<string> { "^<<A", "<^<A", },   // To: 6
   new List<string> { "^<A", "<^A", },   // To: 7
   new List<string> { "^A", },   // To: 8
-  new List<string> { "<<A", },   // To: 9
+  new List<string> { },   // To: 9
   new List<string> { "<A", },   // To: 10
   new List<string> { "A", },   // To: 11
 },
+
 
     };
 }
