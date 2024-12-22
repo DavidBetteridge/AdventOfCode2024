@@ -19,10 +19,10 @@ public class Day22BenchmarkTests
     
     [Benchmark(Baseline = true)]
     [BenchmarkCategory("Part2")]
-    public void Day22_Part2()
+    public async Task Day22_Part2()
     {
         var solver = new Day22_Part2();
-        var answer = solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day22/input.txt", 2000);
+        var answer = await solver.Part2("/Users/davidbetteridge/Personal/AdventOfCode2024/AdventOfCode2024/AdventOfCode2024.Tests/Day22/input.txt", 2000);
         if (answer != 2152) throw new Exception("Wrong answer");
     }
  }

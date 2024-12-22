@@ -1,8 +1,10 @@
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day22_Part2
 {
-    public long Part2(string filename, int numberOfIterations)
+    public async Task<long> Part2(string filename, int numberOfIterations)
     {
         var input = File.ReadAllBytes(filename);
         var i = 0;
@@ -15,19 +17,30 @@ public class Day22_Part2
             i++;
             nums.Add(num);
         }
-        
+
+        var q = new BlockingCollection<Dictionary<Int128, uint>>();
         var totalByOffset = new Dictionary<Int128, uint>();
-        var seenOffsets = new HashSet<Int128>();
+        var queueProcessor = Task.Run(() =>
+        {
+            for (int j = 0; j < nums.Count; j++)
+            {
+                var next = q.Take();
+                foreach (var pair in next)
+                    totalByOffset[pair.Key] = totalByOffset.GetValueOrDefault(pair.Key) + pair.Value;
+            }
+        });
+        
         var mask = (Int128)(Math.Pow(2, 100)) - 1;
-        foreach (var num in nums)
+
+        Parallel.ForEach(nums, num =>
         {
             var secretNumber = (uint)num;
-            var previousPrice = secretNumber%10;
+            var previousPrice = secretNumber % 10;
             System.Int128 offsets = 0;
-            seenOffsets.Clear();
+            var seenOffsets = new Dictionary<Int128, uint>();
             for (var iteration = 0; iteration < numberOfIterations; iteration++)
             {
-                var nextNumber =secretNumber << 6;
+                var nextNumber = secretNumber << 6;
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
@@ -35,7 +48,7 @@ public class Day22_Part2
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
-                nextNumber =secretNumber << 11;
+                nextNumber = secretNumber << 11;
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
@@ -45,14 +58,12 @@ public class Day22_Part2
                 offsets &= mask;
                 previousPrice = price;
 
-                if (!seenOffsets.Contains(offsets))
-                {
-                    totalByOffset[offsets] = totalByOffset.GetValueOrDefault(offsets) + price;
-                    seenOffsets.Add(offsets);
-                }
+                seenOffsets.TryAdd(offsets, price);
             }
-        }
+            q.Add(seenOffsets);
+        });
 
+        await queueProcessor;
         return totalByOffset.Values.Max();
     }
 }

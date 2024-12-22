@@ -17,23 +17,23 @@ public class Day22Tests
     }
 
     [Fact]
-    public void Test_Part2_Sample()
+    public async Task Test_Part2_Sample()
     {
         var solver = new Solutions.Day22_Part2();
-        Assert.Equal(23, solver.Part2("Day22/sample2.txt", 2000));
+        Assert.Equal(23, await solver.Part2("Day22/sample2.txt", 2000));
     }
     
     [Fact]
-    public void Test_Part2_Sample123()
+    public async Task Test_Part2_Sample123()
     {
         var solver = new Solutions.Day22_Part2();
-        Assert.Equal(6, solver.Part2("Day22/sample123.txt", 10));
+        Assert.Equal(6, await solver.Part2("Day22/sample123.txt", 10));
     }
     
     [Fact]
-    public void Test_Part2()
+    public async Task Test_Part2()
     {
         var solver = new Solutions.Day22_Part2();
-        Assert.Equal(2152, solver.Part2("Day22/input.txt", 2000));
+        Assert.Equal(2152,await solver.Part2("Day22/input.txt", 2000));
     }
 }
