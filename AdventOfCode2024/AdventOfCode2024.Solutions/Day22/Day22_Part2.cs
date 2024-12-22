@@ -4,6 +4,15 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day22_Part2
 {
+    record struct Buffer
+    {
+        public uint Value1;
+        public uint Value2;
+        public uint Value3;
+        public uint Value4;
+            
+    }
+    
     public async Task<long> Part2(string filename, int numberOfIterations)
     {
         var input = File.ReadAllBytes(filename);
@@ -18,11 +27,11 @@ public class Day22_Part2
             nums.Add(num);
         }
 
-        var q = new BlockingCollection<Dictionary<Int128, uint>>();
-        var totalByOffset = new Dictionary<Int128, uint>();
+        var q = new BlockingCollection<Dictionary<Buffer, uint>>();
+        var totalByOffset = new Dictionary<Buffer, uint>();
         var queueProcessor = Task.Run(() =>
         {
-            for (int j = 0; j < nums.Count; j++)
+            for (var j = 0; j < nums.Count; j++)
             {
                 var next = q.Take();
                 foreach (var pair in next)
@@ -30,14 +39,13 @@ public class Day22_Part2
             }
         });
         
-        var mask = (Int128)(Math.Pow(2, 100)) - 1;
 
         Parallel.ForEach(nums, num =>
         {
             var secretNumber = (uint)num;
             var previousPrice = secretNumber % 10;
-            System.Int128 offsets = 0;
-            var seenOffsets = new Dictionary<Int128, uint>();
+            Buffer offsets = new();
+            var seenOffsets = new Dictionary<Buffer, uint>();
             for (var iteration = 0; iteration < numberOfIterations; iteration++)
             {
                 var nextNumber = secretNumber << 6;
@@ -54,8 +62,14 @@ public class Day22_Part2
 
                 var price = secretNumber % 10;
                 var offset = price - previousPrice;
-                offsets = (offsets << 25) + (offset + 16777216);
-                offsets &= mask;
+
+                offsets.Value1 = offsets.Value2;
+                offsets.Value2 = offsets.Value3;
+                offsets.Value3 = offsets.Value4;
+                offsets.Value4 = offset + 16777216;
+                
+                // offsets = (offsets << 25) + (offset + 16777216);
+                // offsets &= mask;
                 previousPrice = price;
 
                 seenOffsets.TryAdd(offsets, price);
