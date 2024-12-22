@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day22
@@ -5,8 +7,9 @@ public class Day22
     public long Part1(string filename)
     {
         var nums = File.ReadAllLines(filename).Select(long.Parse).ToArray();
-        var total = 0L;
-        foreach (var num in nums)
+
+        var totals = new ConcurrentBag<long>();
+        Parallel.ForEach(nums, num =>
         {
             var secretNumber = num;
             for (var i = 0; i < 2000; i++)
@@ -24,11 +27,8 @@ public class Day22
                 secretNumber = secretNumber % 16777216;
             }
 
-            total += secretNumber;
-        }
-        
-
-
-        return total;
+            totals.Add(secretNumber);
+        });
+        return totals.Sum();
     }
 }
