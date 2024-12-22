@@ -47,8 +47,8 @@ public class Day22_Part2
 
                 if (!seenOffsets.Contains(offsets))
                 {
-                    seenOffsets.Add(offsets);
                     totalByOffset[offsets] = totalByOffset.GetValueOrDefault(offsets) + price;
+                    seenOffsets.Add(offsets);
                 }
             }
         }
