@@ -14,15 +14,15 @@ public class Day22
             var secretNumber = num;
             for (var i = 0; i < 2000; i++)
             {
-                var nextNumber =secretNumber* 64;
+                var nextNumber =secretNumber << 6;
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
-                nextNumber = (long)(secretNumber / 32);
+                nextNumber = (long)(secretNumber >> 5);
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
-                nextNumber =secretNumber* 2048;
+                nextNumber = secretNumber << 11;
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
             }
