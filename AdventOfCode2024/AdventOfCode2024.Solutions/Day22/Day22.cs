@@ -6,11 +6,9 @@ public class Day22
 {
     public long Part1(string filename)
     {
-        //var nums = File.ReadAllLines(filename).Select(long.Parse).ToArray();
-
         var input = File.ReadAllBytes(filename);
         var i = 0;
-        var nums = new List<long>();
+        var nums = new List<int>();
         while (i < input.Length)
         {
             var num = input[i++] - '0';
@@ -23,14 +21,14 @@ public class Day22
         var totals = new ConcurrentBag<long>();
         Parallel.ForEach(nums, num =>
         {
-            var secretNumber = num;
+            var secretNumber = (uint)num;
             for (var iteration = 0; iteration < 2000; iteration++)
             {
                 var nextNumber =secretNumber << 6;
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
-                nextNumber = (long)(secretNumber >> 5);
+                nextNumber = (uint)(secretNumber >> 5);
                 secretNumber = nextNumber ^ secretNumber;
                 secretNumber = secretNumber % 16777216;
 
