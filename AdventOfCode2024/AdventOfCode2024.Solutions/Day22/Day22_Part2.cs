@@ -4,15 +4,6 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day22_Part2
 {
-    record struct Buffer
-    {
-        public uint Value1;
-        public uint Value2;
-        public uint Value3;
-        public uint Value4;
-            
-    }
-    
     public async Task<long> Part2(string filename, int numberOfIterations)
     {
         var input = File.ReadAllBytes(filename);
@@ -27,8 +18,8 @@ public class Day22_Part2
             nums.Add(num);
         }
 
-        var q = new BlockingCollection<Dictionary<Buffer, uint>>();
-        var totalByOffset = new Dictionary<Buffer, uint>();
+        var q = new BlockingCollection<Dictionary<long, uint>>();
+        var totalByOffset = new Dictionary<long, uint>();
         var queueProcessor = Task.Run(() =>
         {
             for (var j = 0; j < nums.Count; j++)
@@ -44,8 +35,8 @@ public class Day22_Part2
         {
             var secretNumber = (uint)num;
             var previousPrice = secretNumber % 10;
-            Buffer offsets = new();
-            var seenOffsets = new Dictionary<Buffer, uint>();
+            uint offsets = 0;
+            var seenOffsets = new Dictionary<long, uint>();
             for (var iteration = 0; iteration < numberOfIterations; iteration++)
             {
                 var nextNumber = secretNumber << 6;
@@ -61,15 +52,11 @@ public class Day22_Part2
                 secretNumber = secretNumber % 16777216;
 
                 var price = secretNumber % 10;
-                var offset = price - previousPrice;
+                var offset = (price - previousPrice) + 9;
 
-                offsets.Value1 = offsets.Value2;
-                offsets.Value2 = offsets.Value3;
-                offsets.Value3 = offsets.Value4;
-                offsets.Value4 = offset + 16777216;
-                
-                // offsets = (offsets << 25) + (offset + 16777216);
-                // offsets &= mask;
+                // offset is -9 to 9.
+                // Adding 9 brings it in the range 0 ... 18. ...5 bits so will fit in an integer
+                offsets = (offsets << 8) + offset;
                 previousPrice = price;
 
                 seenOffsets.TryAdd(offsets, price);
