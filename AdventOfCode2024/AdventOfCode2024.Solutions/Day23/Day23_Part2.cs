@@ -8,7 +8,7 @@ public class Day23_Part2
 
         var names = new Dictionary<string, int>();
         var names2 = new List<string>();
-        var network = new Dictionary<int, bool[]>();
+        var network = new List<bool[]>();
         
         //de-ta
         foreach (var line in lines)
@@ -19,6 +19,7 @@ public class Day23_Part2
                 lhs = names.Count;
                 names.Add(parts[0], lhs);
                 names2.Add(parts[0]);
+                network.Add(new bool[lines.Length]);
             }
 
             if (!names.TryGetValue(parts[1], out var rhs))
@@ -26,22 +27,10 @@ public class Day23_Part2
                 rhs = names.Count;
                 names.Add(parts[1], rhs);
                 names2.Add(parts[1]);
+                network.Add(new bool[lines.Length]);
             }
-
-            if (!network.TryGetValue(lhs, out var leftNode))
-            {
-                leftNode = new bool[lines.Length];
-                network[lhs] = leftNode;
-            }
-            
-            if (!network.TryGetValue(rhs, out var rightNode))
-            {
-                rightNode = new bool[lines.Length];
-                network[rhs] = rightNode;
-            }
-
-            leftNode[rhs] = true;
-            rightNode[lhs] = true;
+            network[lhs][rhs] = true;
+            network[rhs][lhs] = true;
         }
 
         var excluded = new bool[lines.Length];
