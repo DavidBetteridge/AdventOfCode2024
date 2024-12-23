@@ -7,6 +7,7 @@ public class Day23
         var lines = File.ReadAllLines(filename);
 
         var names = new Dictionary<string, int>();
+        var names2 = new Dictionary<int, string>();
         var network = new Dictionary<int, List<int>>();
         
         //de-ta
@@ -17,12 +18,14 @@ public class Day23
             {
                 lhs = names.Count;
                 names.Add(parts[0], lhs);
+                names2.Add(lhs, parts[0]);
             }
 
             if (!names.TryGetValue(parts[1], out var rhs))
             {
                 rhs = names.Count;
                 names.Add(parts[1], rhs);
+                names2.Add(rhs, parts[1]);
             }
 
             if (!network.TryGetValue(lhs, out var leftNode))
@@ -41,47 +44,53 @@ public class Day23
             rightNode.Add(lhs);
         }
 
-        // Sets of three containing the letter 't'
-        var count = 0;
+        var solutions = new HashSet<ulong>();
         for (var n0 = 0; n0 < names.Count; n0++)
         {
-            var other = network[n0];
-            if (other.Count >= 2)
+            // For all pairs of children,  are they related
+            var possibleNodes = network[n0];
+            if (possibleNodes.Count >= 2)
             {
-                var n1 = network[other[0]];
-                var n2 = network[other[1]];
-
-                if (n1.Count >= 2 && n2.Count >= 2)
+                for (var x = 0; x < possibleNodes.Count-1; x++)
                 {
-                    // n1 must contain n0 and n2
-                    var ok = false;
-                    foreach (var n in n1)
+                    var b = possibleNodes[x];
+                    
+                    for (var y = x+1; y < possibleNodes.Count; y++)
                     {
-                        if (n == other[1])
+                        var c = possibleNodes[y];
+                        
+                        // We know that n0, x and y are related.
+                        // Are x and y related?
+                        var ok = false;
+                        foreach (var n in network[c])
                         {
-                            ok = true;
-                            break;
-                        }
-                    }
-
-                    if (ok)
-                    {
-                        ok = false;
-                        foreach (var n in n2)
-                        {
-                            if (n == other[0])
+                            if (n == b && n != n0)
                             {
-                                ok = true;
-                                break;
+                                var a = n0;
+
+                                if (names2[a].Contains('t') || names2[b].Contains('t') || names2[c].Contains('t'))
+                                {
+                                    if (a > c)
+                                        (a, c) = (c, a);
+
+                                    if (a > b)
+                                        (a, b) = (b, a);
+
+                                    if (b > c)
+                                        (b, c) = (c, b);
+
+                                    var sol = ((ulong)a << 22) + ((ulong)b << 11) + (ulong)c;
+                                    solutions.Add(sol);
+                                    break;
+                                }
                             }
                         }
                     }
-                    if (ok)
-                        count++;
                 }
             }
+            
         }
         
-        return count;
+        return solutions.Count;
     }
 }
