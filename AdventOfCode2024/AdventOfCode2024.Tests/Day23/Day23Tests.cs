@@ -13,7 +13,7 @@ public class Day23Tests
     public void Test_Part1()
     {
         var solver = new Solutions.Day23();
-        Assert.Equal(17965282317, solver.Part1("Day23/input.txt"));  // 1982 too high
+        Assert.Equal(17965282317, solver.Part1("Day23/input.txt"));  // 1982 too high,  982 too low
     }
 
 }

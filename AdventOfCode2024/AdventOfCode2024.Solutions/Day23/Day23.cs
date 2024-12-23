@@ -61,14 +61,13 @@ public class Day23
                         
                         // We know that n0, x and y are related.
                         // Are x and y related?
-                        var ok = false;
                         foreach (var n in network[c])
                         {
                             if (n == b && n != n0)
                             {
                                 var a = n0;
 
-                                if (names2[a].Contains('t') || names2[b].Contains('t') || names2[c].Contains('t'))
+                                if (names2[a].StartsWith('t') || names2[b].StartsWith('t') || names2[c].StartsWith('t'))
                                 {
                                     if (a > c)
                                         (a, c) = (c, a);
@@ -81,7 +80,6 @@ public class Day23
 
                                     var sol = ((ulong)a << 22) + ((ulong)b << 11) + (ulong)c;
                                     solutions.Add(sol);
-                                    break;
                                 }
                             }
                         }
