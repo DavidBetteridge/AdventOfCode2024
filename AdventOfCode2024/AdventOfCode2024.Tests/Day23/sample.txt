@@ -1,11 +1,11 @@
-yn-aq
-vc-aq
 kh-tc
 qp-kh
 de-cg
 ka-co
+yn-aq
 qp-ub
 cg-tb
+vc-aq
 tb-ka
 wh-tc
 yn-cg
