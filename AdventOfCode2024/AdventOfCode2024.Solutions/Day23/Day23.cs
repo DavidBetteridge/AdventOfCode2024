@@ -48,39 +48,38 @@ public class Day23
         for (var n0 = 0; n0 < names.Count; n0++)
         {
             // For all pairs of children,  are they related
-            var possibleNodes = network[n0];
-            if (possibleNodes.Count >= 2)
+            var nodesLinkedToN0 = network[n0];
+            for (var x = 0; x < nodesLinkedToN0.Count-1; x++)
             {
-                for (var x = 0; x < possibleNodes.Count-1; x++)
+                var n1 = nodesLinkedToN0[x];
+                
+                for (var y = x+1; y < nodesLinkedToN0.Count; y++)
                 {
-                    var b = possibleNodes[x];
+                    var n2 = nodesLinkedToN0[y];
                     
-                    for (var y = x+1; y < possibleNodes.Count; y++)
+                    // We know that n0, x and y are related.
+                    // Are x and y related?
+                    foreach (var nodeLinkedToN2 in network[n2])
                     {
-                        var c = possibleNodes[y];
-                        
-                        // We know that n0, x and y are related.
-                        // Are x and y related?
-                        foreach (var n in network[c])
+                        if (nodeLinkedToN2 == n1 && nodeLinkedToN2 != n0 && n1 != n2)
                         {
-                            if (n == b && n != n0)
+                            var a = n0;
+                            var b = n1;
+                            var c = n2;
+
+                            if (names2[a].StartsWith('t') || names2[n1].StartsWith('t') || names2[c].StartsWith('t'))
                             {
-                                var a = n0;
+                                if (a > c)
+                                    (a, c) = (c, a);
+                                
+                                if (a > b)
+                                    (a, b) = (b, a);
+                                
+                                if (b > c)
+                                    (b, c) = (c, b);
 
-                                if (names2[a].StartsWith('t') || names2[b].StartsWith('t') || names2[c].StartsWith('t'))
-                                {
-                                    if (a > c)
-                                        (a, c) = (c, a);
-
-                                    if (a > b)
-                                        (a, b) = (b, a);
-
-                                    if (b > c)
-                                        (b, c) = (c, b);
-
-                                    var sol = ((ulong)a << 22) + ((ulong)b << 11) + (ulong)c;
-                                    solutions.Add(sol);
-                                }
+                                var sol = ((ulong)a << 22) | ((ulong)b << 11) | (uint)c;
+                                solutions.Add(sol);
                             }
                         }
                     }
