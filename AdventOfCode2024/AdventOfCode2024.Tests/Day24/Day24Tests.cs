@@ -23,5 +23,10 @@ public class Day24Tests
         Assert.Equal((ulong)65635066541798, solver.Part1("Day24/input.txt"));
     }
    
-    
+    [Fact]
+    public void Test_Part2()
+    {
+        var solver = new Solutions.Day24_Part2();
+        Assert.Equal("dgr,dtv,fgc,mtj,vvm,z12,z29,z37", solver.Part2("Day24/input.txt"));
+    }
 }

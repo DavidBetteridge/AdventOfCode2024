@@ -9,8 +9,7 @@ public class Day24_Part2
       public string Rhs { get; set; }
       public string Op { get; set; }
       public string Target { get; set; }
-      public string Comment { get; set; }
-      
+
       public int CompareTo(object? obj)
       {
          var t = obj as Triple;
@@ -47,204 +46,61 @@ public class Day24_Part2
          }
       }
       triples.Sort();
+      var answer = new HashSet<string>();
 
-      var answer = new List<string>();
+
       foreach (var triple in triples)
       {
-         // Any output to a Z which isn't an XOR must be wrong.
-         if (triple.Target.StartsWith('z') && triple.Op != "XOR")
+         if (triple.Target.StartsWith('z') && triple.Op != "XOR" && triple.Target != "z45")
          {
-            Console.WriteLine(triple.Original);
             answer.Add(triple.Target);
+            Console.WriteLine("Only XORs can target zs - not " + triple.Original);
          }
-      }
-      
-      // wpb OR fbj -> z45
-      // fsf OR nqs -> z12
-      // jfk AND vkb -> z29
-      // x37 AND y37 -> z37
-
-      
-      foreach (var triple in triples)
-      {
-         if (triple.Op == "XOR" && !triple.Lhs.StartsWith('x') && !triple.Target.StartsWith('z'))
+         
+         // Stage2 XORs must target Zs
+         if (!triple.Target.StartsWith('z') && triple.Op == "XOR" && !triple.Lhs.StartsWith("x"))
          {
-            Console.WriteLine(triple.Original);
             answer.Add(triple.Target);
+            Console.WriteLine("Stage2 XORs must target Zs - not " + triple.Original);
          }
-      }
-      
-      // bkj XOR fhq -> dtv
-      // vkb XOR jfk -> mtj
-      // jmr XOR qts -> fgc
-
-      
-      //INPUT ANDS should OUTPUT to a OR
-      foreach (var triple in triples)
-      {
-         if (triple.Op == "AND" && triple.Lhs.StartsWith('x') && !triple.Lhs.StartsWith("x00"))
+         
+         // Adds must feed ORs
+         if (triple.Op == "AND" && triple.Lhs != "x00" )
          {
-            foreach (var triple2 in triples)
+            var feeds = triples.Where(t => t.Lhs == triple.Target || t.Rhs == triple.Target).ToList();
+            foreach (var fed in feeds)
             {
-               if (triple2.Lhs == triple.Target || triple2.Rhs == triple.Target)
+               if (fed.Op != "OR")
                {
-                  if (triple2.Op != "OR")
-                  {
-                     Console.WriteLine(triple.Original);
-                     answer.Add(triple.Target);
-                     break;
-                  }
+                  answer.Add(triple.Target);
+                  Console.WriteLine("ANDS must target ORS - not " + triple.Original);
+                  break;
                }
             }
          }
-      }
-
-      answer.Sort();
-      return string.Join(',', answer);
-      
-      foreach (var triple in triples)
-      {
-         if (triple.Lhs.StartsWith('x') && triple.Rhs.StartsWith('y'))
+         
+         // ORs must be targeted by ANDS
+         if (triple.Op == "OR" )
          {
-            var lhs = int.Parse(triple.Lhs[1..]);
-            var rhs = int.Parse(triple.Rhs[1..]);
-            if (lhs != rhs || triple.Op == "OR") throw new Exception();
-            triple.Comment = $"Adder for {lhs}";
-
-            if (lhs == 0 && triple.Op == "AND")
+            var LHSFeeds = triples.Single(t => t.Target == triple.Lhs);
+            if (LHSFeeds.Op != "AND")
             {
-               // Rename triple.Target to c0 
-               foreach (var triple2 in triples)
-               {
-                  if (triple2.Lhs == triple.Target)
-                  {
-                     triple2.Lhs = $"car{lhs}";
-                  
-                  }
-                  else if (triple2.Rhs == triple.Target)
-                  {
-                     triple2.Rhs = triple2.Lhs;
-                     triple2.Lhs = $"car{lhs}";
-                  }
-               }
-
-               triple.Target = "car0";
+               answer.Add(LHSFeeds.Target);
+               Console.WriteLine("ORS must be targeted by ANDS - not " + LHSFeeds.Original);
             }
-
-            if (lhs != 0 && triple.Op == "XOR")
+            
+            var RHSFeeds = triples.Single(t => t.Target == triple.Rhs);
+            if (RHSFeeds.Op != "AND")
             {
-               // Rename triple.Target to sumN 
-               foreach (var triple2 in triples)
-               {
-                  if (triple2.Lhs == triple.Target)
-                  {
-                     triple2.Lhs = triple2.Rhs;
-                     triple2.Rhs = $"sum{lhs}";
-                  }
-                  else if (triple2.Rhs == triple.Target)
-                     triple2.Rhs = $"sum{lhs}";
-               }
-
-               triple.Target = $"sum{lhs}";
-            }
-
-            if (lhs != 0 && triple.Op == "AND")
-            {
-               foreach (var triple2 in triples)
-               {
-                  if (triple2.Lhs == triple.Target)
-                     triple2.Lhs = $"tcA{lhs}";
-                  else if (triple2.Rhs == triple.Target)
-                  {
-                     triple2.Rhs = triple2.Lhs;
-                     triple2.Lhs = $"tcA{lhs}";
-                  }
-               }
-
-               triple.Target = $"tcA{lhs}";
-            }
-
-         }
-      }
-
-      for (int i = 0; i < 50; i++)
-      {
-
-
-         foreach (var triple in triples)
-         {
-            if (triple.Lhs.StartsWith("car") && triple.Rhs.StartsWith("sum"))
-            {
-               var lhs = int.Parse(triple.Lhs[3..]);
-               var rhs = int.Parse(triple.Rhs[3..]);
-               if (lhs + 1 != rhs || triple.Op == "OR") throw new Exception();
-
-               if (triple.Op == "XOR")
-               {
-                  if (triple.Target != $"z{rhs:D2}")
-                     Console.WriteLine(triple.Original);
-                     //throw new Exception("Wrong target");
-               }
-
-               if (triple.Op == "AND")
-               {
-                  foreach (var triple2 in triples)
-                  {
-                     if (triple2.Lhs == triple.Target)
-                     {
-                        triple2.Lhs = triple2.Rhs;
-                        triple2.Rhs = $"tcB{rhs}";
-                     }
-                     else if (triple2.Rhs == triple.Target)
-                        triple2.Rhs = $"tcB{rhs}";
-                  }
-
-                  triple.Target = $"tcB{rhs}";
-               }
-            }
-
-            if (triple.Lhs.StartsWith("tcA") && triple.Rhs.StartsWith("tcB"))
-            {
-               var lhs = int.Parse(triple.Lhs[3..]);
-               var rhs = int.Parse(triple.Rhs[3..]);
-               if (lhs != rhs || triple.Op != "OR") throw new Exception();
-
-               // Rename triple.Target to sumN 
-               foreach (var triple2 in triples)
-               {
-                  if (triple2.Lhs == triple.Target)
-                  {
-                     triple2.Lhs = $"car{lhs}";
-
-                  }
-                  else if (triple2.Rhs == triple.Target)
-                  {
-                     triple2.Rhs = triple2.Lhs;
-                     triple2.Lhs = $"car{lhs}";
-                  }
-               }
-
-               triple.Target = $"car{lhs}";
+               answer.Add(RHSFeeds.Target);
+               Console.WriteLine("ORS must be targeted by ANDS - not " + RHSFeeds.Original);
             }
          }
       }
 
-      // Half Adder
-      //    x00 ^ y00 ==> z00
-      //    x00 & y00 ==> car0
-      
-      
-      // Full Adders (n)...
-      //    x01 ^ y01 ==> sum1
-      //    x01 & y01 ==> tcA1
-      
-      //    car0 ^ sum1 ==> z01
-      //    car0 & sum1 ==> tcB1
-      
-      //    tcA1 | tcB1 ==> c1   
-      
-
-      return "";
+      var a = answer.ToList();
+      a.Sort();
+      return string.Join(',', a);
    }
     
 }
