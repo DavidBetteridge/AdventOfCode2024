@@ -2,25 +2,13 @@ namespace AdventOfCode2024.Solutions;
 
 public class Day24_Part2
 {
-   private record Triple : IComparable
+   private record Triple
    {
       public string Original { get; set; }
       public string Lhs { get; set; }
       public string Rhs { get; set; }
       public string Op { get; set; }
       public string Target { get; set; }
-
-      public int CompareTo(object? obj)
-      {
-         var t = obj as Triple;
-         var a = this.Lhs.CompareTo(t!.Lhs);
-         if (a != 0) return a;
-         
-         var b = this.Rhs.CompareTo(t!.Rhs);
-         if (b != 0) return b;
-         
-         return this.Op.CompareTo(t!.Op);
-      }
    }
    
    public string Part2(string filename)
@@ -45,10 +33,8 @@ public class Day24_Part2
             });
          }
       }
-      triples.Sort();
+
       var answer = new HashSet<string>();
-
-
       foreach (var triple in triples)
       {
          if (triple.Target.StartsWith('z') && triple.Op != "XOR" && triple.Target != "z45")
