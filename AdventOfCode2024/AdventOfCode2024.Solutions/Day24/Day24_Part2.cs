@@ -40,14 +40,14 @@ public class Day24_Part2
          if (triple.Target.StartsWith('z') && triple.Op != "XOR" && triple.Target != "z45")
          {
             answer.Add(triple.Target);
-            Console.WriteLine("Only XORs can target zs - not " + triple.Original);
+         //   Console.WriteLine("Only XORs can target zs - not " + triple.Original);
          }
          
          // Stage2 XORs must target Zs
          if (!triple.Target.StartsWith('z') && triple.Op == "XOR" && !triple.Lhs.StartsWith("x"))
          {
             answer.Add(triple.Target);
-            Console.WriteLine("Stage2 XORs must target Zs - not " + triple.Original);
+           // Console.WriteLine("Stage2 XORs must target Zs - not " + triple.Original);
          }
          
          // Adds must feed ORs
@@ -59,7 +59,7 @@ public class Day24_Part2
                if (fed.Op != "OR")
                {
                   answer.Add(triple.Target);
-                  Console.WriteLine("ANDS must target ORS - not " + triple.Original);
+           //       Console.WriteLine("ANDS must target ORS - not " + triple.Original);
                   break;
                }
             }
@@ -72,14 +72,14 @@ public class Day24_Part2
             if (LHSFeeds.Op != "AND")
             {
                answer.Add(LHSFeeds.Target);
-               Console.WriteLine("ORS must be targeted by ANDS - not " + LHSFeeds.Original);
+          //     Console.WriteLine("ORS must be targeted by ANDS - not " + LHSFeeds.Original);
             }
             
             var RHSFeeds = triples.Single(t => t.Target == triple.Rhs);
             if (RHSFeeds.Op != "AND")
             {
                answer.Add(RHSFeeds.Target);
-               Console.WriteLine("ORS must be targeted by ANDS - not " + RHSFeeds.Original);
+          //     Console.WriteLine("ORS must be targeted by ANDS - not " + RHSFeeds.Original);
             }
          }
       }
