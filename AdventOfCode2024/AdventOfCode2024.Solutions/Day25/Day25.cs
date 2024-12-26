@@ -72,17 +72,11 @@ public class Day25
             foreach (var loc in locks)
             {
                 var ok = loc[5] >= key[5];
-                if (ok)
-                {
-                    for (var j = 0; j < 5; j++)
-                    {
-                        if (key[j] > loc[j])
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-                }
+                ok &= loc[0] >= key[0];
+                ok &= loc[1] >= key[1];
+                ok &= loc[2] >= key[2];
+                ok &= loc[3] >= key[3];
+                ok &= loc[4] >= key[4];
 
                 if (ok)
                     total.Add(1);
