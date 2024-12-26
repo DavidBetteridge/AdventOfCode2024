@@ -17,16 +17,20 @@ public class Day25
             
             if (isKey)
             {
-                var key = new int[5] { 5, 5, 5, 5, 5 };
+                var key = new int[6] { 5, 5, 5, 5, 5, 25 };
                 for (var r = 0; r < 5; r++)
                 {
                     for (var c = 0; c < 5; c++)
                     {
                         if (input[i] == '.')
+                        {
                             key[c]--;
+                        }
+
                         i++;
                     }
-
+                    key[5] = key[0] + key[1] + key[2] + key[3] + key[4];
+                    
                     i++; // New line
                 }
 
@@ -34,15 +38,20 @@ public class Day25
             }
             else
             {
-                var loc = new int[5] { 0,0,0,0,0 };
+                var loc = new int[6] { 0,0,0,0,0, 0 };
                 for (var r = 0; r < 5; r++)
                 {
                     for (var c = 0; c < 5; c++)
                     {
                         if (input[i] == '.')
+                        {
                             loc[c]++;
+                        }
+
                         i++;
                     }
+
+                    loc[5] = loc[0] + loc[1] + loc[2] + loc[3] + loc[4];
                     i++; // New line
                 }
                 locks.Add(loc);
@@ -57,13 +66,16 @@ public class Day25
         {
             foreach (var loc in locks)
             {
-                var ok = true;
-                for (var j = 0; j < 5; j++)
+                var ok = loc[5] >= key[5];
+                if (ok)
                 {
-                    if (key[j] > loc[j])
+                    for (var j = 0; j < 5; j++)
                     {
-                        ok = false;
-                        break;
+                        if (key[j] > loc[j])
+                        {
+                            ok = false;
+                            break;
+                        }
                     }
                 }
 
