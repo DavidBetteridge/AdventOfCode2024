@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace AdventOfCode2024.Solutions;
 
 public class Day25
@@ -14,7 +16,7 @@ public class Day25
         {
             var isKey = input[i] == '.';
             i += 6;
-            
+
             if (isKey)
             {
                 var key = new int[6] { 5, 5, 5, 5, 5, 25 };
@@ -29,8 +31,9 @@ public class Day25
 
                         i++;
                     }
+
                     key[5] = key[0] + key[1] + key[2] + key[3] + key[4];
-                    
+
                     i++; // New line
                 }
 
@@ -38,7 +41,7 @@ public class Day25
             }
             else
             {
-                var loc = new int[6] { 0,0,0,0,0, 0 };
+                var loc = new int[6] { 0, 0, 0, 0, 0, 0 };
                 for (var r = 0; r < 5; r++)
                 {
                     for (var c = 0; c < 5; c++)
@@ -54,15 +57,17 @@ public class Day25
                     loc[5] = loc[0] + loc[1] + loc[2] + loc[3] + loc[4];
                     i++; // New line
                 }
+
                 locks.Add(loc);
             }
 
-            i += 7;  // Trailer and blank line
+            i += 7; // Trailer and blank line
         }
-        
 
-        var total = 0;
-        foreach (var key in keys)
+
+        var total = new ConcurrentBag<int>();
+
+        Parallel.ForEach(keys, key =>
         {
             foreach (var loc in locks)
             {
@@ -80,10 +85,10 @@ public class Day25
                 }
 
                 if (ok)
-                    total++;
+                    total.Add(1);
             }
-        }
+        });
 
-        return total;
+        return total.Count;
     }
 }
