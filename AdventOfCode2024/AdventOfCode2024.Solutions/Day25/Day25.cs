@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Numerics.Tensors;
 
 namespace AdventOfCode2024.Solutions;
 
@@ -62,17 +63,46 @@ public class Day25
         }
 
 
-        var total = new ConcurrentBag<int>();
-
-        Parallel.ForEach(keys, key =>
+        const int BlockSize = 25;
+      
+        var la = locks.ToArray();
+        var total =new ConcurrentBag<int>();
+        var blockCount = keys.Count / BlockSize;
+        Parallel.For(0, blockCount, block =>
         {
-            foreach (var loc in locks)
+            var k = new uint[locks.Count];
+            ReadOnlySpan<uint> l = la;
+
+            foreach (var key in keys[(block*BlockSize)..(((block+1)*BlockSize))])
             {
-                if ((loc & key) == 0)
-                    total.Add(1);
+                Array.Fill(k, key);
+                TensorPrimitives.BitwiseAnd(l, k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                total.Add((int)(TensorPrimitives.Sum<uint>(k)));
             }
         });
+        
+        if( keys.Count % BlockSize != 0)
+        {
+            var k = new uint[locks.Count];
+            ReadOnlySpan<uint> l = la;
 
-        return total.Count;
+            for (var j = blockCount * BlockSize; j < k.Length; j++)
+            {
+                var key = keys[j];
+                Array.Fill(k, key);
+                TensorPrimitives.BitwiseAnd(l, k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                TensorPrimitives.PopCount<uint>(k, k);
+                total.Add((int)(TensorPrimitives.Sum<uint>(k)));
+            }
+        }
+            
+        return (locks.Count * keys.Count) - total.Sum();
     }
 }
